@@ -113,7 +113,8 @@ function main() {
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
   // Clear the canvas
-  gl.clearColor(1, 1, 0, 0.5);
+  var color = [Math.random(), Math.random(), Math.random(), 1];
+  gl.clearColor(...color);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   // Tell it to use our program (pair of shaders)

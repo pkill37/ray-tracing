@@ -1,33 +1,11 @@
-//////////////////////////////////////////////////////////////////////////////
-//
-//  WebGL_example_25.js 
-//
-//  Phong Illumination Model on the CPU - Reading normal vectors
-//
-//  References: www.learningwebgl.com + E. Angel examples
-//
-//  J. Madeira - October 2015 + November 2017
-//
-//////////////////////////////////////////////////////////////////////////////
-
-
-//----------------------------------------------------------------------------
-//
-// Global Variables
-//
-
-var gl = null; // WebGL context
-
+var gl = null;
 var shaderProgram = null;
-
 var triangleVertexPositionBuffer = null;
-	
 var triangleVertexColorBuffer = null;
 
 // The GLOBAL transformation parameters
 
 var globalAngleYY = 0.0;
-
 var globalTz = 0.0;
 
 // The local transformation parameters
@@ -35,53 +13,37 @@ var globalTz = 0.0;
 // The translation vector
 
 var tx = 0.0;
-
 var ty = 0.0;
-
 var tz = 0.0;
 
 // The rotation angles in degrees
 
 var angleXX = 0.0;
-
 var angleYY = 0.0;
-
 var angleZZ = 0.0;
 
 // The scaling factors
 
 var sx = 0.5;
-
 var sy = 0.5;
-
 var sz = 0.5;
 
 // GLOBAL Animation controls
 
 var globalRotationYY_ON = 1;
-
 var globalRotationYY_DIR = 1;
-
 var globalRotationYY_SPEED = 1;
 
 // Local Animation controls
 
 var rotationXX_ON = 1;
-
 var rotationXX_DIR = 1;
-
 var rotationXX_SPEED = 1;
- 
 var rotationYY_ON = 1;
-
 var rotationYY_DIR = 1;
-
 var rotationYY_SPEED = 1;
- 
 var rotationZZ_ON = 1;
-
 var rotationZZ_DIR = 1;
-
 var rotationZZ_SPEED = 1;
  
 // To allow choosing the way of drawing the model triangles
@@ -113,24 +75,16 @@ var nPhong = 100;
 // Initial model has just ONE TRIANGLE
 
 var vertices = [
-
 		// FRONTAL TRIANGLE
-		 
 		-0.5, -0.5,  0.5,
-		 
 		 0.5, -0.5,  0.5,
-		 
 		 0.5,  0.5,  0.5,
 ];
 
 var normals = [
-
 		// FRONTAL TRIANGLE
-		 
 		 0.0,  0.0,  1.0,
-		 
 		 0.0,  0.0,  1.0,
-		 
 		 0.0,  0.0,  1.0,
 ];
 
@@ -139,13 +93,9 @@ var normals = [
 // They are to be computed by the Phong Illumination Model
 
 var colors = [
-
 		 // FRONTAL TRIANGLE
-		 	
 		 1.00,  0.00,  0.00,
-		 
 		 1.00,  0.00,  0.00,
-		 
 		 1.00,  0.00,  0.00,
 ];
 
@@ -315,94 +265,55 @@ function computeIllumination( mvMatrix ) {
 	        
 	        var vectorL = vec4();
 	
-	        if( pos_Light_Source[3] == 0.0 )
-	        {
+	        if (pos_Light_Source[3] == 0.0) {
 	            // DIRECTIONAL Light Source
 	            
 	            vectorL = multiplyVectorByMatrix( 
 							lightSourceMatrix,
 							pos_Light_Source );
-	        }
-	        else
-	        {
+	        } else {
 	            // POINT Light Source
+	            // TODO : apply the global transformation to the light source?	
+	            vectorL = multiplyPointByMatrix(lightSourceMatrix, pos_Light_Source);
 	
-	            // TO DO : apply the global transformation to the light source?
-	
-	            vectorL = multiplyPointByMatrix( 
-							lightSourceMatrix,
-							pos_Light_Source );
-				
-				for( var i = 0; i < 3; i++ )
-	            {
-	                vectorL[ i ] -= pointP[ i ];
+				for(var i = 0; i < 3; i++) {
+	                vectorL[i] -= pointP[i];
 	            }
 	        }
 	
 			// Back to Euclidean coordinates
 			
-			vectorL = vectorL.slice(0,3);
+			vectorL = vectorL.slice(0, 3);
 			
-	        normalize( vectorL );
+	        normalize(vectorL);
 	
-	        var cosNL = dotProduct( vectorN, vectorL );
+	        var cosNL = dotProduct(vectorN, vectorL);
 	
-	        if( cosNL < 0.0 )
-	        {
-				// No direct illumination !!
-				
-				cosNL = 0.0;
-	        }
+            // No direct illumination !!
+	        if(cosNL < 0.0) cosNL = 0.0;
 	
 	        // SEPCULAR ILLUMINATION 
 	
-	        var vectorH = add( vectorL, vectorV );
-	
-	        normalize( vectorH );
-	
-	        var cosNH = dotProduct( vectorN, vectorH );
+	        var vectorH = add(vectorL, vectorV);
+	        normalize(vectorH);
+	        var cosNH = dotProduct(vectorN, vectorH);
 	
 			// No direct illumination or viewer not in the right direction
-			
-	        if( (cosNH < 0.0) || (cosNL <= 0.0) )
-	        {
-	            cosNH = 0.0;
-	        }
+	        if((cosNH < 0.0) || (cosNL <= 0.0)) cosNH = 0.0;
 	
 	        // Compute the color values and store in the colors array
-	        
 	        var tempR = ambientTerm[0] + diffuseTerm[0] * cosNL + specularTerm[0] * Math.pow(cosNH, nPhong);
-	        
 	        var tempG = ambientTerm[1] + diffuseTerm[1] * cosNL + specularTerm[1] * Math.pow(cosNH, nPhong);
-	        
 	        var tempB = ambientTerm[2] + diffuseTerm[2] * cosNL + specularTerm[2] * Math.pow(cosNH, nPhong);
 	        
 			colors[vertIndex] += tempR;
-	        
-	        // Avoid exceeding 1.0
-	        
-			if( colors[vertIndex] > 1.0 ) {
-				
-				colors[vertIndex] = 1.0;
-			}
-	        
-	        // Avoid exceeding 1.0
+			colors[vertIndex] = Math.min(colors[vertIndex], 1.0);
 	        
 			colors[vertIndex + 1] += tempG;
-			
-			if( colors[vertIndex + 1] > 1.0 ) {
-				
-				colors[vertIndex + 1] = 1.0;
-			}
+			colors[vertIndex + 1] = Math.min(colors[vertIndex + 1], 1.0);
 			
 			colors[vertIndex + 2] += tempB;
-	        
-	        // Avoid exceeding 1.0
-	        
-			if( colors[vertIndex + 2] > 1.0 ) {
-				
-				colors[vertIndex + 2] = 1.0;
-			}
+			colors[vertIndex + 2] = Math.min(colors[vertIndex + 2], 1.0);
 	    }	
 	}
 }
@@ -549,45 +460,36 @@ function drawScene() {
 var lastTime = 0;
 
 function animate() {
-	
 	var timeNow = new Date().getTime();
 	
-	if( lastTime != 0 ) {
-		
+	if(lastTime != 0) {
 		var elapsed = timeNow - lastTime;
 		
 		// Global rotation
 		
-		if( globalRotationYY_ON ) {
-
+		if(globalRotationYY_ON ) {
 			globalAngleYY += globalRotationYY_DIR * globalRotationYY_SPEED * (90 * elapsed) / 1000.0;
 	    }
 
 		// Local rotations
 		
-		if( rotationXX_ON ) {
-
+		if(rotationXX_ON) {
 			angleXX += rotationXX_DIR * rotationXX_SPEED * (90 * elapsed) / 1000.0;
 	    }
 
-		if( rotationYY_ON ) {
-
+		if(rotationYY_ON) {
 			angleYY += rotationYY_DIR * rotationYY_SPEED * (90 * elapsed) / 1000.0;
 	    }
 
-		if( rotationZZ_ON ) {
-
+		if(rotationZZ_ON) {
 			angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (90 * elapsed) / 1000.0;
 	    }
 
 		// Rotating the light sources
 	
-		for(var i = 0; i < lightSources.length; i++ )
-	    {
-			if( lightSources[i].isRotYYOn() ) {
-
+		for(var i = 0; i < lightSources.length; i++ ) {
+			if(lightSources[i].isRotYYOn()) {
 				var angle = lightSources[i].getRotAngleYY() + lightSources[i].getRotationSpeed() * (90 * elapsed) / 1000.0;
-		
 				lightSources[i].setRotAngleYY( angle );
 			}
 		}
@@ -596,111 +498,41 @@ function animate() {
 	lastTime = timeNow;
 }
 
-
-//----------------------------------------------------------------------------
-
-// Timer
-
 function tick() {
-	
-	requestAnimationFrame(tick);
+    requestAnimationFrame(tick);
 
+    resizeCanvasToDisplaySize(gl.canvas);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-  resizeCanvasToDisplaySize(gl.canvas);
-
-  // Tell WebGL how to convert from clip space to pixels
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-	
 	drawScene();
-	
 	animate();
 }
 
-
-
-
-//----------------------------------------------------------------------------
-//
-//  User Interaction
-//
-
-function outputInfos(){
-    
-}
-
-//----------------------------------------------------------------------------
-
-
-
-//----------------------------------------------------------------------------
-//
-// WebGL Initialization
-//
-
 function initWebGL( canvas ) {
 	try {
-		
-		// Create the WebGL context
-		
-		// Some browsers still need "experimental-webgl"
-		
-		gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+		gl = canvas.getContext("webgl2");
+        
+        var color = [Math.random(), Math.random(), Math.random(), 1];
+        gl.clearColor(...color);
 
-		
-		// DEFAULT: The viewport occupies the whole canvas 
-		
-		// DEFAULT: The viewport background color is WHITE
-		
-		// NEW - Drawing the triangles defining the model
-		
 		primitiveType = gl.TRIANGLES;
-		
-		// DEFAULT: Face culling is DISABLED
-		
-		// Enable FACE CULLING
-		
+
 		gl.enable( gl.CULL_FACE );
-		
-		// DEFAULT: The BACK FACE is culled!!
-		
-		// The next instruction is not needed...
-		
 		gl.cullFace( gl.BACK );
-
-		// Enable DEPTH-TEST
-		
-		gl.enable( gl.DEPTH_TEST );        
-
-
-
-
-
+		gl.enable(gl.DEPTH_TEST);
 	} catch (e) {
 	}
+
 	if (!gl) {
 		alert("Could not initialise WebGL, sorry! :-(");
-	}        
+	}
 }
-
-//----------------------------------------------------------------------------
 
 function runWebGL() {
-	
 	var canvas = document.getElementById("canvas");
-	
-	initWebGL( canvas );
-
-	shaderProgram = initShaders( gl );
-		
+	initWebGL(canvas);
+	shaderProgram = initShaders(gl);
 	initBuffers();
-	
-	tick();		// NEW --- A timer controls the rendering / animation    
-
-	outputInfos();
-
-
-
+	tick();
 }
-
 

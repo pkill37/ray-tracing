@@ -50,7 +50,7 @@ var rotationZZ_SPEED = 1;
 var primitiveType = null;
 
 // To allow choosing the projection type
-var projectionType = 0;
+var projectionType = 1;
 
 // Initial model has just ONE TRIANGLE
 var vertices = sphere;
@@ -136,22 +136,12 @@ function animate() {
 		var elapsed = timeNow - lastTime;
 
 		// Global rotation
-		if(globalRotationYY_ON ) {
-			globalAngleYY += globalRotationYY_DIR * globalRotationYY_SPEED * (90 * elapsed) / 1000.0;
-	    }
+		if(globalRotationYY_ON) globalAngleYY += globalRotationYY_DIR * globalRotationYY_SPEED * (90 * elapsed) / 1000.0;
 
 		// Local rotations
-		if(rotationXX_ON) {
-			angleXX += rotationXX_DIR * rotationXX_SPEED * (90 * elapsed) / 1000.0;
-	    }
-
-		if(rotationYY_ON) {
-			angleYY += rotationYY_DIR * rotationYY_SPEED * (90 * elapsed) / 1000.0;
-	    }
-
-		if(rotationZZ_ON) {
-			angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (90 * elapsed) / 1000.0;
-	    }
+		if(rotationXX_ON) angleXX += rotationXX_DIR * rotationXX_SPEED * (90 * elapsed) / 1000.0;
+		if(rotationYY_ON) angleYY += rotationYY_DIR * rotationYY_SPEED * (90 * elapsed) / 1000.0;
+		if(rotationZZ_ON) angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (90 * elapsed) / 1000.0;
 
 		// Rotating the light sources
 		for(var i = 0; i < lightSources.length; i++ ) {

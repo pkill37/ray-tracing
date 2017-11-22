@@ -10,7 +10,7 @@ function drawScene() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	// Computing the Projection Matrix
-	if( projectionType == 0 ) {
+	if(projectionType == 0) {
 		// For now, the default orthogonal view volume
 		pMatrix = ortho( -1.0, 1.0, -1.0, 1.0, -1.0, 1.0 );
 
@@ -23,7 +23,7 @@ function drawScene() {
 		// A standard view volume.
 		// Viewer is at (0,0,0)
 		// Ensure that the model is "inside" the view volume
-		pMatrix = perspective( 45, 1, 0.05, 15 );
+		pMatrix = perspective(45, 1, 0.05, 15);
 
 		// Global transformation !!
 		globalTz = -2.5;

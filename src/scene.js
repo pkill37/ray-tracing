@@ -37,12 +37,18 @@ function drawScene() {
 	gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
 
 	// GLOBAL TRANSFORMATION FOR THE WHOLE SCENE
-	mvMatrix = translationMatrix( 0, 0, globalTz );
+	mvMatrix = translationMatrix(0, 0, globalTz);
 
 	// Instantianting the current model
 	drawModel( angleXX, angleYY, angleZZ,
 	           sx, sy, sz,
 	           tx, ty, tz,
+	           mvMatrix,
+	           primitiveType );
+
+	drawModel( angleXX, angleYY, angleZZ,
+	           sx, sy, sz,
+	           tx+1, ty+1, tz,
 	           mvMatrix,
 	           primitiveType );
 }

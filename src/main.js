@@ -53,19 +53,10 @@ var primitiveType = null;
 var projectionType = 0;
 
 // Initial model has just ONE TRIANGLE
-var vertices = [
-		// FRONTAL TRIANGLE
-		-0.5, -0.5,  0.5,
-		 0.5, -0.5,  0.5,
-		 0.5,  0.5,  0.5,
-];
+var vertices = sphere;
 
-var normals = [
-		// FRONTAL TRIANGLE
-		 0.0,  0.0,  1.0,
-		 0.0,  0.0,  1.0,
-		 0.0,  0.0,  1.0,
-];
+var normals = [];
+computeVertexNormals(vertices, normals);
 
 // Initial color values just for testing!!
 var colors = [
@@ -100,14 +91,14 @@ function initBuffers() {
 }
 
 function drawModel(angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
-	// The the global model transformation is an input
+	// The global model transformation is an input
 	// Concatenate with the particular model transformations
     // Pay attention to transformation order !!
 	mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
-	mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ ));
-	mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY ));
-	mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX ));
-	mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz ));
+	mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
+	mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY));
+	mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX));
+	mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
 
 	// Passing the Model View Matrix to apply the current transformation
 	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
@@ -143,6 +134,7 @@ function animate() {
 
 	if(lastTime != 0) {
 		var elapsed = timeNow - lastTime;
+
 		// Global rotation
 		if(globalRotationYY_ON ) {
 			globalAngleYY += globalRotationYY_DIR * globalRotationYY_SPEED * (90 * elapsed) / 1000.0;
@@ -165,7 +157,7 @@ function animate() {
 		for(var i = 0; i < lightSources.length; i++ ) {
 			if(lightSources[i].isRotYYOn()) {
 				var angle = lightSources[i].getRotAngleYY() + lightSources[i].getRotationSpeed() * (90 * elapsed) / 1000.0;
-				lightSources[i].setRotAngleYY( angle );
+				lightSources[i].setRotAngleYY(angle);
 			}
 		}
 	}
@@ -208,4 +200,3 @@ function runWebGL() {
 	initBuffers();
 	tick();
 }
-

@@ -1,7 +1,7 @@
 var gl = null;
 var shaderProgram = null;
 var triangleVertexPositionBuffer = null;
-var triangleVertexColorBuffer = null;
+var triangleVertexNormalBuffer = null;
 
 // The GLOBAL transformation parameters
 
@@ -52,6 +52,11 @@ var primitiveType = null;
 // To allow choosing the projection type
 var projectionType = 1;
 
+var pos_Viewer = [ 0.0, 0.0, 0.0, 1.0 ];
+var pos_Light_Source = [ 0.0, 0.0, 1.0, 0.0 ];
+var int_Light_Source = [ 1.0, 1.0, 1.0 ];
+var ambient_Illumination = [ 0.3, 0.3, 0.3 ];
+
 // Initial model has just ONE TRIANGLE
 var vertices = sphere;
 
@@ -66,10 +71,10 @@ var colors = [
 		 1.00,  0.00,  0.00,
 ];
 
-// Handling the Vertex and the Color Buffers
+// Handling the Vertex and the Normals Buffers
 
 function initBuffers() {
-	// Coordinates
+	// Vertex Coordinates
 	triangleVertexPositionBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -79,15 +84,15 @@ function initBuffers() {
 	// Associating to the vertex shader
 	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-	// Colors
-	triangleVertexColorBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-	triangleVertexColorBuffer.itemSize = 3;
-	triangleVertexColorBuffer.numItems = colors.length / 3;
+	// Vertex Normal Vectors
+	triangleVertexNormalBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexNormalBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+	triangleVertexNormalBuffer.itemSize = 3;
+	triangleVertexNormalBuffer.numItems = normals.length / 3;
 
 	// Associating to the vertex shader
-	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, triangleVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
 }
 
 function drawModel(angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
@@ -104,12 +109,24 @@ function drawModel(angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, 
 	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
 
-	// NEW - Aux. Function for computing the illumination
-	computeIllumination(mvMatrix);
+    // Multiplying the reflection coefficents
+    var ambientProduct = mult( kAmbi, ambient_Illumination );
+    var diffuseProduct = mult( kDiff, int_Light_Source );
+    var specularProduct = mult( kSpec, int_Light_Source );
 
 	// Associating the data to the vertex shader
 	// TODO: This can be done in a better way !!
+	// Vertex Coordinates and Vertex Normal Vectors
 	initBuffers();
+
+	// Partial illumonation terms and shininess Phong coefficient
+	gl.uniform3fv( gl.getUniformLocation(shaderProgram, "ambientProduct"), flatten(ambientProduct) );
+    gl.uniform3fv( gl.getUniformLocation(shaderProgram, "diffuseProduct"), flatten(diffuseProduct) );
+    gl.uniform3fv( gl.getUniformLocation(shaderProgram, "specularProduct"), flatten(specularProduct) );
+	gl.uniform1f( gl.getUniformLocation(shaderProgram, "shininess"), nPhong );
+
+	//Position of the Light Source
+	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(pos_Light_Source));
 
 	// Drawing
 	// primitiveType allows drawing as filled triangles / wireframe / vertices

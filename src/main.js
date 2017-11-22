@@ -53,7 +53,6 @@ var primitiveType = null;
 var projectionType = 0;
 
 // Initial model has just ONE TRIANGLE
-
 var vertices = [
 		// FRONTAL TRIANGLE
 		-0.5, -0.5,  0.5,
@@ -69,9 +68,6 @@ var normals = [
 ];
 
 // Initial color values just for testing!!
-
-// They are to be computed by the Phong Illumination Model
-
 var colors = [
 		 // FRONTAL TRIANGLE
 		 1.00,  0.00,  0.00,
@@ -90,10 +86,7 @@ function initBuffers() {
 	triangleVertexPositionBuffer.numItems = vertices.length / 3;
 
 	// Associating to the vertex shader
-
-	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,
-			triangleVertexPositionBuffer.itemSize,
-			gl.FLOAT, false, 0, 0);
+	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
 	// Colors
 	triangleVertexColorBuffer = gl.createBuffer();
@@ -103,116 +96,42 @@ function initBuffers() {
 	triangleVertexColorBuffer.numItems = colors.length / 3;
 
 	// Associating to the vertex shader
-
-	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute,
-			triangleVertexColorBuffer.itemSize,
-			gl.FLOAT, false, 0, 0);
+	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 }
 
-function drawModel( angleXX, angleYY, angleZZ,
-					sx, sy, sz,
-					tx, ty, tz,
-					mvMatrix,
-					primitiveType ) {
-
+function drawModel(angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
 	// The the global model transformation is an input
-	
 	// Concatenate with the particular model transformations
-	
     // Pay attention to transformation order !!
-    
-	mvMatrix = mult( mvMatrix, translationMatrix( tx, ty, tz ) );
-						 
-	mvMatrix = mult( mvMatrix, rotationZZMatrix( angleZZ ) );
-	
-	mvMatrix = mult( mvMatrix, rotationYYMatrix( angleYY ) );
-	
-	mvMatrix = mult( mvMatrix, rotationXXMatrix( angleXX ) );
-	
-	mvMatrix = mult( mvMatrix, scalingMatrix( sx, sy, sz ) );
-						 
-	// Passing the Model View Matrix to apply the current transformation
-	
-	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-	
-	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
-	
-	// NEW - Aux. Function for computing the illumination
-	
-	computeIllumination( mvMatrix );
-	
-	// Associating the data to the vertex shader
-	
-	// This can be done in a better way !!
+	mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
+	mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ ));
+	mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY ));
+	mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX ));
+	mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz ));
 
+	// Passing the Model View Matrix to apply the current transformation
+	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
+
+	// NEW - Aux. Function for computing the illumination
+	computeIllumination(mvMatrix);
+
+	// Associating the data to the vertex shader
+	// TODO: This can be done in a better way !!
 	initBuffers();
 
 	// Drawing
-
 	// primitiveType allows drawing as filled triangles / wireframe / vertices
-
-	if( primitiveType == gl.LINE_LOOP ) {
+	if(primitiveType == gl.LINE_LOOP) {
 		// To simulate wireframe drawing!
 		// No faces are defined! There are no hidden lines!
 		// Taking the vertices 3 by 3 and drawing a LINE_LOOP
-
-		var i;
-		for( i = 0; i < triangleVertexPositionBuffer.numItems / 3; i++ ) {
+		for(var i = 0; i < triangleVertexPositionBuffer.numItems / 3; i++) {
 			gl.drawArrays( primitiveType, 3 * i, 3 );
 		}
-	}
-	else {
+	} else {
 		gl.drawArrays(primitiveType, 0, triangleVertexPositionBuffer.numItems);
 	}
-}
-
-//----------------------------------------------------------------------------
-
-//  Drawing the 3D scene
-
-function drawScene() {
-	var pMatrix;
-	var mvMatrix = mat4();
-
-	// Clearing the frame-buffer and the depth-buffer
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-	// Computing the Projection Matrix
-	if( projectionType == 0 ) {
-		// For now, the default orthogonal view volume
-		pMatrix = ortho( -1.0, 1.0, -1.0, 1.0, -1.0, 1.0 );
-
-		// Global transformation !!
-		globalTz = 0.0;
-
-		// TO BE DONE !
-		// Allow the user to control the size of the view volume
-	} else {
-		// A standard view volume.
-		// Viewer is at (0,0,0)
-		// Ensure that the model is "inside" the view volume
-		pMatrix = perspective( 45, 1, 0.05, 15 );
-
-		// Global transformation !!
-		globalTz = -2.5;
-
-		// TO BE DONE !
-		// Allow the user to control the size of the view volume
-	}
-
-	// Passing the Projection Matrix to apply the current projection
-	var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-	gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
-
-	// GLOBAL TRANSFORMATION FOR THE WHOLE SCENE
-	mvMatrix = translationMatrix( 0, 0, globalTz );
-
-	// Instantianting the current model
-	drawModel( angleXX, angleYY, angleZZ,
-	           sx, sy, sz,
-	           tx, ty, tz,
-	           mvMatrix,
-	           primitiveType );
 }
 
 // Animation --- Updating transformation parameters
@@ -272,11 +191,10 @@ function initWebGL( canvas ) {
 
 		primitiveType = gl.TRIANGLES;
 
-		gl.enable( gl.CULL_FACE );
-		gl.cullFace( gl.BACK );
+		gl.enable(gl.CULL_FACE);
+		gl.cullFace(gl.BACK);
 		gl.enable(gl.DEPTH_TEST);
-	} catch (e) {
-	}
+	} catch (e) { }
 
 	if (!gl) {
 		alert("Could not initialise WebGL, sorry! :-(");

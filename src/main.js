@@ -2,6 +2,7 @@ var gl = null;
 var shaderProgram = null;
 var triangleVertexPositionBuffer = null;
 var triangleVertexNormalBuffer = null;
+var triangleVertexColorBuffer = null;
 
 // The GLOBAL transformation parameters
 
@@ -57,13 +58,11 @@ var pos_Light_Source = [ 1.0, 1.0, 1.0, 0.0 ];
 var int_Light_Source = [ 0.0, 0.0, 1.0 ];
 var ambient_Illumination = [ 0.3, 0.3, 0.3 ];
 
-// Initial model has just ONE TRIANGLE
 var vertices = sphere;
-
 var normals = [];
 computeVertexNormals(vertices, normals);
 
-var colors = flatten(Array(36864).fill([0, 0, 1]));
+var colors = flatten(Array(36864).fill([1, 0, 0]));
 
 function drawModel(color, angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
 	// The global model transformation is an input
@@ -80,8 +79,8 @@ function drawModel(color, angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvM
 	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
 
     // Multiplying the reflection coefficents
-    var ambientProduct = mult(kAmbi, color);
-    var diffuseProduct = mult(kDiff, color);
+    var ambientProduct = mult(kAmbi, lightSources[0].getAmbIntensity());
+    var diffuseProduct = mult(kDiff, lightSources[0].getIntensity());
     var specularProduct = mult(kSpec, lightSources[0].getIntensity());
 
 	// Associating the data to the vertex shader

@@ -10,18 +10,20 @@ const fragmentShaderSource = `
 
 const vertexShaderSource = `
     attribute vec3 vPosition;
+    attribute vec3 vColor;
+    attribute vec3 vNormal;
+
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
 
-    varying vec4 fColor;
-    attribute vec3 vNormal;
     uniform vec4 lightPosition;
     uniform vec4 viewerPosition;
-
     uniform vec3 ambientProduct;
     uniform vec3 diffuseProduct;
     uniform vec3 specularProduct;
     uniform float shininess;
+
+    varying vec4 fColor;
 
     void main(void) {
         // To allow seeing the points drawn
@@ -64,7 +66,7 @@ const vertexShaderSource = `
 
         // Compute terms in the illumination equation
         // Ambient component is constant
-        vec4 ambient = vec4( ambientProduct, 1.0 );
+        vec4 ambient = vec4( vColor, 1.0 );
 
         // Diffuse component
         float dotProductLN = L[0] * N[0] + L[1] * N[1] + L[2] * N[2];
@@ -74,7 +76,7 @@ const vertexShaderSource = `
         // Specular component
         float dotProductNH = N[0] * H[0] + N[1] * H[1] + N[2] * H[2];
         float cosNH = pow( max( dotProductNH, 0.0 ), shininess );
-        vec4  specular = vec4( specularProduct * cosNH, 1.0 );
+        vec4 specular = vec4( specularProduct * cosNH, 1.0 );
 
         if( dotProductLN < 0.0 ) {
             specular = vec4(0.0, 0.0, 0.0, 1.0);
@@ -89,16 +91,20 @@ function initShaders(gl) {
     var fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
     var vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
     var shaderProgram = createProgram(gl, vertexShader, fragmentShader);
-	gl.useProgram(shaderProgram);
+    gl.useProgram(shaderProgram);
 
-	// Coordinates
-	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "vPosition");
-	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    // Coordinates
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "vPosition");
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-	// Normals
-	shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "vNormal");
-	gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+    // Colors
+    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "vColor");
+    gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
 
-	return shaderProgram;
+    // Normals
+    shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "vNormal");
+    gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+
+    return shaderProgram;
 }
 

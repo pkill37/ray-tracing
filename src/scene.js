@@ -40,13 +40,15 @@ function drawScene() {
 	mvMatrix = translationMatrix(0, 0, globalTz);
 
 	// Instantianting the current model
-	drawModel(angleXX, angleYY, angleZZ,
+	drawModel([0, 1, 0],
+              angleXX, angleYY, angleZZ,
 	          sx, sy, sz,
 	          tx, ty, tz,
 	          mvMatrix,
 	          primitiveType);
 
-	drawModel(angleXX, angleYY, angleZZ,
+	drawModel([0, 0, 1],
+              angleXX, angleYY, angleZZ,
 	          sx, sy, sz,
 	          tx+1, ty+1, tz-5,
 	          mvMatrix,

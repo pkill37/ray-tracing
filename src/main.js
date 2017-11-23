@@ -53,8 +53,8 @@ var primitiveType = null;
 var projectionType = 1;
 
 var pos_Viewer = [ 0.0, 0.0, 0.0, 1.0 ];
-var pos_Light_Source = [ 0.0, 0.0, 1.0, 0.0 ];
-var int_Light_Source = [ 1.0, 1.0, 1.0 ];
+var pos_Light_Source = [ 1.0, 1.0, 1.0, 0.0 ];
+var int_Light_Source = [ 0.0, 0.0, 1.0 ];
 var ambient_Illumination = [ 0.3, 0.3, 0.3 ];
 
 // Initial model has just ONE TRIANGLE
@@ -63,15 +63,9 @@ var vertices = sphere;
 var normals = [];
 computeVertexNormals(vertices, normals);
 
-// Initial color values just for testing!!
-var colors = [
-		 // FRONTAL TRIANGLE
-		 1.00,  0.00,  0.00,
-		 1.00,  0.00,  0.00,
-		 1.00,  0.00,  0.00,
-];
+var colors = flatten(Array(36864).fill([0, 0, 1]));
 
-function drawModel(angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
+function drawModel(color, angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
 	// The global model transformation is an input
 	// Concatenate with the particular model transformations
     // Pay attention to transformation order
@@ -86,12 +80,11 @@ function drawModel(angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, 
 	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
 
     // Multiplying the reflection coefficents
-    var ambientProduct = mult(kAmbi, ambient_Illumination);
-    var diffuseProduct = mult(kDiff, int_Light_Source);
-    var specularProduct = mult(kSpec, int_Light_Source);
+    var ambientProduct = mult(kAmbi, color);
+    var diffuseProduct = mult(kDiff, color);
+    var specularProduct = mult(kSpec, lightSources[0].getIntensity());
 
 	// Associating the data to the vertex shader
-	// TODO: This can be done in a better way !!
 	initBuffers();
 
 	// Partial illumonation terms and shininess Phong coefficient
@@ -101,7 +94,7 @@ function drawModel(angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, 
 	gl.uniform1f(gl.getUniformLocation(shaderProgram, "shininess"), nPhong);
 
 	//Position of the Light Source
-	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(pos_Light_Source));
+	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(lightSources[0].getPosition()));
 
 	// primitiveType allows drawing as filled triangles / wireframe / vertices
 	if(primitiveType == gl.LINE_LOOP) {
@@ -147,10 +140,8 @@ function animate() {
 
 function tick() {
     requestAnimationFrame(tick);
-
     resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
 	drawScene();
 	animate();
 }
@@ -158,26 +149,20 @@ function tick() {
 function initWebGL(canvas) {
 	try {
 		gl = canvas.getContext("webgl2");
-
-        var color = [Math.random(), Math.random(), Math.random(), 1];
-        gl.clearColor(...color);
-
-		primitiveType = gl.TRIANGLES;
-
+        gl.clearColor(...[Math.random(), Math.random(), Math.random(), 1]);
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
 		gl.enable(gl.DEPTH_TEST);
-	} catch (e) { }
-
-	if (!gl) {
-		alert("Could not initialise WebGL, sorry! :-(");
-	}
+		primitiveType = gl.TRIANGLES;
+	} catch (e) {
+		console.log("Could not initialise WebGL", e);
+    }
 }
 
 function runWebGL() {
 	var canvas = document.getElementById("canvas");
 	initWebGL(canvas);
 	shaderProgram = initShaders(gl);
-	initBuffers();
 	tick();
 }
+

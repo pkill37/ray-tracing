@@ -7,27 +7,6 @@ var triangleVertexColorBuffer = null;
 // The GLOBAL transformation parameters
 
 var globalAngleYY = 0.0;
-var globalTz = 0.0;
-
-// The local transformation parameters
-
-// The translation vector
-
-var tx = 0.0;
-var ty = 0.0;
-var tz = 0.0;
-
-// The rotation angles in degrees
-
-var angleXX = 0.0;
-var angleYY = 0.0;
-var angleZZ = 0.0;
-
-// The scaling factors
-
-var sx = 0.5;
-var sy = 0.5;
-var sz = 0.5;
 
 // GLOBAL Animation controls
 
@@ -53,56 +32,6 @@ var primitiveType = null;
 // To allow choosing the projection type
 var projectionType = 1;
 
-var pos_Viewer = [ 0.0, 0.0, 0.0, 1.0 ];
-var pos_Light_Source = [ 1.0, 1.0, 1.0, 0.0 ];
-var int_Light_Source = [ 0.0, 0.0, 1.0 ];
-var ambient_Illumination = [ 0.3, 0.3, 0.3 ];
-
-
-function drawModel(vertices, normals, colors, angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
-	// The global model transformation is an input
-	// Concatenate with the particular model transformations
-    // Pay attention to transformation order
-	mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
-	mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
-	mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY));
-	mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX));
-	mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
-
-	// Passing the Model View Matrix to apply the current transformation
-	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
-
-    // Multiplying the reflection coefficents
-    var ambientProduct = mult(kAmbi, lightSources[0].getAmbIntensity());
-    var diffuseProduct = mult(kDiff, lightSources[0].getIntensity());
-    var specularProduct = mult(kSpec, lightSources[0].getIntensity());
-
-	// Associating the data to the vertex shader
-	initBuffers(vertices, normals, colors);
-
-	// Partial illumonation terms and shininess Phong coefficient
-	gl.uniform3fv(gl.getUniformLocation(shaderProgram, "ambientProduct"), flatten(ambientProduct));
-    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "diffuseProduct"), flatten(diffuseProduct));
-    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "specularProduct"), flatten(specularProduct));
-	gl.uniform1f(gl.getUniformLocation(shaderProgram, "shininess"), nPhong);
-
-	//Position of the Light Source
-	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(lightSources[0].getPosition()));
-
-	// primitiveType allows drawing as filled triangles / wireframe / vertices
-	if(primitiveType == gl.LINE_LOOP) {
-		// To simulate wireframe drawing!
-		// No faces are defined! There are no hidden lines!
-		// Taking the vertices 3 by 3 and drawing a LINE_LOOP
-		for(var i = 0; i < triangleVertexPositionBuffer.numItems / 3; i++) {
-			gl.drawArrays(primitiveType, 3 * i, 3);
-		}
-	} else {
-		gl.drawArrays(primitiveType, 0, triangleVertexPositionBuffer.numItems);
-	}
-}
-
 // Animation --- Updating transformation parameters
 
 var lastTime = 0;
@@ -116,10 +45,10 @@ function animate() {
 		// Global rotation
 		if(globalRotationYY_ON) globalAngleYY += globalRotationYY_DIR * globalRotationYY_SPEED * (90 * elapsed) / 1000.0;
 
-		// Local rotations
+		/*// Local rotations
 		if(rotationXX_ON) angleXX += rotationXX_DIR * rotationXX_SPEED * (90 * elapsed) / 1000.0;
 		if(rotationYY_ON) angleYY += rotationYY_DIR * rotationYY_SPEED * (90 * elapsed) / 1000.0;
-		if(rotationZZ_ON) angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (90 * elapsed) / 1000.0;
+		if(rotationZZ_ON) angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (90 * elapsed) / 1000.0;*/
 
 		// Rotating the light sources
 		for(var i = 0; i < lightSources.length; i++ ) {

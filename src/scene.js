@@ -1,9 +1,48 @@
-//----------------------------------------------------------------------------
-//  Drawing the 3D scene
-//----------------------------------------------------------------------------
+function drawModel(vertices, normals, colors, angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
+	// The global model transformation is an input
+	// Concatenate with the particular model transformations
+    // Pay attention to transformation order
+	mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
+	mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
+	mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY));
+	mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX));
+	mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
+
+	// Passing the Model View Matrix to apply the current transformation
+	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
+
+    // Multiplying the reflection coefficents
+    var ambientProduct = mult(kAmbi, lightSources[0].getAmbIntensity());
+    var diffuseProduct = mult(kDiff, lightSources[0].getIntensity());
+    var specularProduct = mult(kSpec, lightSources[0].getIntensity());
+
+	// Associating the data to the vertex shader
+	initBuffers(vertices, normals, colors);
+
+	// Partial illumonation terms and shininess Phong coefficient
+	gl.uniform3fv(gl.getUniformLocation(shaderProgram, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "specularProduct"), flatten(specularProduct));
+	gl.uniform1f(gl.getUniformLocation(shaderProgram, "shininess"), nPhong);
+
+	//Position of the Light Source
+	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(lightSources[0].getPosition()));
+
+	// primitiveType allows drawing as filled triangles / wireframe / vertices
+	if(primitiveType == gl.LINE_LOOP) {
+		// To simulate wireframe drawing!
+		// No faces are defined! There are no hidden lines!
+		// Taking the vertices 3 by 3 and drawing a LINE_LOOP
+		for(var i = 0; i < triangleVertexPositionBuffer.numItems / 3; i++) {
+			gl.drawArrays(primitiveType, 3 * i, 3);
+		}
+	} else {
+		gl.drawArrays(primitiveType, 0, triangleVertexPositionBuffer.numItems);
+	}
+}
 
 function drawScene() {
-
 	let objs = {
 		sphere0:{
 			vertices: sphere,
@@ -52,7 +91,7 @@ function drawScene() {
 	};
 	var pMatrix;
 	var mvMatrix = mat4();
-
+    var globalTz;
 	// Clearing the frame-buffer and the depth-buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 

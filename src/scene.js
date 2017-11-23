@@ -3,6 +3,53 @@
 //----------------------------------------------------------------------------
 
 function drawScene() {
+
+	let objs = {
+		sphere0:{
+			vertices: sphere,
+			colors:flatten(Array(36864).fill([1, 0, 0])),
+			normals:[],
+			tx:0,
+			ty:0,
+			tz:0,
+			sx:0.5,
+			sy:0.5,
+			sz:0.5,
+			angleXX:0,
+			angleYY:0,
+			angleZZ:0,
+			
+		}, 
+		sphere1:{
+			vertices:sphere,
+			colors:flatten(Array(36864).fill([0, 1, 0])),
+			normals:[],
+			tx:1,
+			ty:1,
+			tz:-5,
+			sx:0.5,
+			sy:0.5,
+			sz:0.5,
+			angleXX:0,
+			angleYY:0,
+			angleZZ:0
+
+		}, 
+		checkered_floor:{
+			vertices:[],
+			colors:[],
+			normals:[],
+			tx:3,
+			ty:3,
+			tz:0,
+			sx:0.5,
+			sy:0.5,
+			sz:0.5,
+			angleXX:0,
+			angleYY:0,
+			angleZZ:0
+		}
+	};
 	var pMatrix;
 	var mvMatrix = mat4();
 
@@ -39,19 +86,15 @@ function drawScene() {
 	// GLOBAL TRANSFORMATION FOR THE WHOLE SCENE
 	mvMatrix = translationMatrix(0, 0, globalTz);
 
-	// Instantianting the current model
-	drawModel([0, 1, 0],
-              angleXX, angleYY, angleZZ,
-	          sx, sy, sz,
-	          tx, ty, tz,
-	          mvMatrix,
-	          primitiveType);
-
-	drawModel([0, 0, 1],
-              angleXX, angleYY, angleZZ,
-	          sx, sy, sz,
-	          tx+1, ty+1, tz-5,
-	          mvMatrix,
-	          primitiveType);
+	for(obj of Object.values(objs)){
+		drawModel(obj.vertices,
+				  computeVertexNormals(obj.vertices),
+				  obj.colors,
+	              obj.angleXX, obj.angleYY, obj.angleZZ,
+		          obj.sx, obj.sy, obj.sz,
+		          obj.tx, obj.ty, obj.tz,
+		          mvMatrix,
+		          primitiveType);
+	}
 }
 

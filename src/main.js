@@ -58,13 +58,8 @@ var pos_Light_Source = [ 1.0, 1.0, 1.0, 0.0 ];
 var int_Light_Source = [ 0.0, 0.0, 1.0 ];
 var ambient_Illumination = [ 0.3, 0.3, 0.3 ];
 
-var vertices = sphere;
-var normals = [];
-computeVertexNormals(vertices, normals);
 
-var colors = flatten(Array(36864).fill([1, 0, 0]));
-
-function drawModel(color, angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
+function drawModel(vertices, normals, colors, angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
 	// The global model transformation is an input
 	// Concatenate with the particular model transformations
     // Pay attention to transformation order
@@ -84,7 +79,7 @@ function drawModel(color, angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvM
     var specularProduct = mult(kSpec, lightSources[0].getIntensity());
 
 	// Associating the data to the vertex shader
-	initBuffers();
+	initBuffers(vertices, normals, colors);
 
 	// Partial illumonation terms and shininess Phong coefficient
 	gl.uniform3fv(gl.getUniformLocation(shaderProgram, "ambientProduct"), flatten(ambientProduct));

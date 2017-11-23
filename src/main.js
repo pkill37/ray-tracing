@@ -71,34 +71,10 @@ var colors = [
 		 1.00,  0.00,  0.00,
 ];
 
-// Handling the Vertex and the Normals Buffers
-
-function initBuffers() {
-	// Vertex Coordinates
-	triangleVertexPositionBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-	triangleVertexPositionBuffer.itemSize = 3;
-	triangleVertexPositionBuffer.numItems = vertices.length / 3;
-
-	// Associating to the vertex shader
-	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-	// Vertex Normal Vectors
-	triangleVertexNormalBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexNormalBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
-	triangleVertexNormalBuffer.itemSize = 3;
-	triangleVertexNormalBuffer.numItems = normals.length / 3;
-
-	// Associating to the vertex shader
-	gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, triangleVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-}
-
 function drawModel(angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
 	// The global model transformation is an input
 	// Concatenate with the particular model transformations
-    // Pay attention to transformation order !!
+    // Pay attention to transformation order
 	mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
 	mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
 	mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY));
@@ -110,32 +86,30 @@ function drawModel(angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, 
 	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
 
     // Multiplying the reflection coefficents
-    var ambientProduct = mult( kAmbi, ambient_Illumination );
-    var diffuseProduct = mult( kDiff, int_Light_Source );
-    var specularProduct = mult( kSpec, int_Light_Source );
+    var ambientProduct = mult(kAmbi, ambient_Illumination);
+    var diffuseProduct = mult(kDiff, int_Light_Source);
+    var specularProduct = mult(kSpec, int_Light_Source);
 
 	// Associating the data to the vertex shader
 	// TODO: This can be done in a better way !!
-	// Vertex Coordinates and Vertex Normal Vectors
 	initBuffers();
 
 	// Partial illumonation terms and shininess Phong coefficient
-	gl.uniform3fv( gl.getUniformLocation(shaderProgram, "ambientProduct"), flatten(ambientProduct) );
-    gl.uniform3fv( gl.getUniformLocation(shaderProgram, "diffuseProduct"), flatten(diffuseProduct) );
-    gl.uniform3fv( gl.getUniformLocation(shaderProgram, "specularProduct"), flatten(specularProduct) );
-	gl.uniform1f( gl.getUniformLocation(shaderProgram, "shininess"), nPhong );
+	gl.uniform3fv(gl.getUniformLocation(shaderProgram, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "specularProduct"), flatten(specularProduct));
+	gl.uniform1f(gl.getUniformLocation(shaderProgram, "shininess"), nPhong);
 
 	//Position of the Light Source
 	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(pos_Light_Source));
 
-	// Drawing
 	// primitiveType allows drawing as filled triangles / wireframe / vertices
 	if(primitiveType == gl.LINE_LOOP) {
 		// To simulate wireframe drawing!
 		// No faces are defined! There are no hidden lines!
 		// Taking the vertices 3 by 3 and drawing a LINE_LOOP
 		for(var i = 0; i < triangleVertexPositionBuffer.numItems / 3; i++) {
-			gl.drawArrays( primitiveType, 3 * i, 3 );
+			gl.drawArrays(primitiveType, 3 * i, 3);
 		}
 	} else {
 		gl.drawArrays(primitiveType, 0, triangleVertexPositionBuffer.numItems);
@@ -181,7 +155,7 @@ function tick() {
 	animate();
 }
 
-function initWebGL( canvas ) {
+function initWebGL(canvas) {
 	try {
 		gl = canvas.getContext("webgl2");
 

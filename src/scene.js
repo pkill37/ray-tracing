@@ -12,7 +12,7 @@ function drawScene() {
 	// Computing the Projection Matrix
 	if(projectionType == 0) {
 		// For now, the default orthogonal view volume
-		pMatrix = ortho( -1.0, 1.0, -1.0, 1.0, -1.0, 1.0 );
+		pMatrix = ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
 
 		// Global transformation !!
 		globalTz = 0.0;
@@ -26,7 +26,7 @@ function drawScene() {
 		pMatrix = perspective(45, 1, 0.05, 15);
 
 		// Global transformation !!
-		globalTz = -2.5;
+		globalTz = -4.5;
 
 		// TO BE DONE !
 		// Allow the user to control the size of the view volume
@@ -40,16 +40,16 @@ function drawScene() {
 	mvMatrix = translationMatrix(0, 0, globalTz);
 
 	// Instantianting the current model
-	drawModel( angleXX, angleYY, angleZZ,
-	           sx, sy, sz,
-	           tx, ty, tz,
-	           mvMatrix,
-	           primitiveType );
+	drawModel(angleXX, angleYY, angleZZ,
+	          sx, sy, sz,
+	          tx, ty, tz,
+	          mvMatrix,
+	          primitiveType);
 
-	drawModel( angleXX, angleYY, angleZZ,
-	           sx, sy, sz,
-	           tx+1, ty+1, tz,
-	           mvMatrix,
-	           primitiveType );
+	drawModel(angleXX, angleYY, angleZZ,
+	          sx, sy, sz,
+	          tx+1, ty+1, tz-5,
+	          mvMatrix,
+	          primitiveType);
 }
 

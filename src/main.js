@@ -1,69 +1,11 @@
 var gl = null;
 var shaderProgram = null;
-var triangleVertexPositionBuffer = null;
-var triangleVertexNormalBuffer = null;
-var triangleVertexColorBuffer = null;
-
-// The GLOBAL transformation parameters
-
-var globalAngleYY = 0.0;
-
-// GLOBAL Animation controls
-
-var globalRotationYY_ON = 1;
-var globalRotationYY_DIR = 1;
-var globalRotationYY_SPEED = 1;
-
-// Local Animation controls
-
-var rotationXX_ON = 1;
-var rotationXX_DIR = 1;
-var rotationXX_SPEED = 1;
-var rotationYY_ON = 1;
-var rotationYY_DIR = 1;
-var rotationYY_SPEED = 1;
-var rotationZZ_ON = 1;
-var rotationZZ_DIR = 1;
-var rotationZZ_SPEED = 1;
-
-// To allow choosing the projection type
-var projectionType = 1;
-
-// Animation --- Updating transformation parameters
-
-var lastTime = 0;
-
-function animate() {
-	var timeNow = new Date().getTime();
-
-	if(lastTime != 0) {
-		var elapsed = timeNow - lastTime;
-
-		// Global rotation
-		if(globalRotationYY_ON) globalAngleYY += globalRotationYY_DIR * globalRotationYY_SPEED * (90 * elapsed) / 1000.0;
-
-		/*// Local rotations
-		if(rotationXX_ON) angleXX += rotationXX_DIR * rotationXX_SPEED * (90 * elapsed) / 1000.0;
-		if(rotationYY_ON) angleYY += rotationYY_DIR * rotationYY_SPEED * (90 * elapsed) / 1000.0;
-		if(rotationZZ_ON) angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (90 * elapsed) / 1000.0;*/
-
-		// Rotating the light sources
-		for(var i = 0; i < lightSources.length; i++) {
-			if(lightSources[i].isRotYYOn()) {
-				var angle = lightSources[i].getRotAngleYY() + lightSources[i].getRotationSpeed() * (90 * elapsed) / 1000.0;
-				lightSources[i].setRotAngleYY(angle);
-			}
-		}
-	}
-	lastTime = timeNow;
-}
 
 function tick() {
     requestAnimationFrame(tick);
     resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-	drawScene();
-	animate();
+    scene.draw();
 }
 
 function initWebGL(canvas) {
@@ -79,10 +21,58 @@ function initWebGL(canvas) {
     }
 }
 
+var scene;
 function runWebGL() {
 	var canvas = document.getElementById("canvas");
 	initWebGL(canvas);
 	shaderProgram = initShaders(gl);
-	tick();
+	scene = new Scene()
+ 
+    let size = 1;
+    let frustum = [
+        [-size/2, 0, size/2],
+        [size/2, 0, size/2],
+        [size/2, 0, -size/2],
+        [-size/2, 0, -size/2],
+        [0, 1, 0],
+    ];
+    let frustumVertices = [
+        ...frustum[0],
+        ...frustum[3],
+        ...frustum[2],
+
+        ...frustum[0],
+        ...frustum[2],
+        ...frustum[1],
+
+        ...frustum[1],
+        ...frustum[2],
+        ...frustum[4],
+
+        ...frustum[2],
+        ...frustum[3],
+        ...frustum[4],
+
+        ...frustum[3],
+        ...frustum[0],
+        ...frustum[4],
+
+        ...frustum[0],
+        ...frustum[1],
+        ...frustum[4]
+    ];
+
+    let models = [
+        new Sphere(sphereVertices, flatten(Array(36864).fill(COLORS.GREEN.slice(0, 3))), 0, 0, 0, 0.5, 0.5, 0.5, 1, 1, -5),
+        new Sphere(sphereVertices, flatten(Array(36864).fill(COLORS.RED.slice(0, 3))), 0, 0, 0, 0.5, 0.5, 0.5, 0, 0, 0),
+        new Frustum(frustumVertices, flatten(Array(6*3).fill(COLORS.BLUE.slice(0,3))), 0, Math.PI*2.8, Math.PI*1.5, 0.5, 0.5, 0.5, 0, 0, 2),
+        //new Line([0, 1, 0], [0, 0, 1], COLORS.BLUE.slice(0,3))
+    ]
+
+    for(let model of models) {
+        scene.add(model)
+    }
+
+	tick()
 }
 

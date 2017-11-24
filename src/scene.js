@@ -1,192 +1,110 @@
-function drawModel(vertices, normals, colors, angleXX, angleYY, angleZZ, sx, sy, sz, tx, ty, tz, mvMatrix, primitiveType) {
-	// The global model transformation is an input
-	// Concatenate with the particular model transformations
-    // Pay attention to transformation order
-	mvMatrix = mult(mvMatrix, translationMatrix(tx, ty, tz));
-	mvMatrix = mult(mvMatrix, rotationZZMatrix(angleZZ));
-	mvMatrix = mult(mvMatrix, rotationYYMatrix(angleYY));
-	mvMatrix = mult(mvMatrix, rotationXXMatrix(angleXX));
-	mvMatrix = mult(mvMatrix, scalingMatrix(sx, sy, sz));
-
-	// Passing the Model View Matrix to apply the current transformation
-	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
-
-    // Multiplying the reflection coefficents
-    var ambientProduct = mult(kAmbi, lightSources[0].getAmbIntensity());
-    var diffuseProduct = mult(kDiff, lightSources[0].getIntensity());
-    var specularProduct = mult(kSpec, lightSources[0].getIntensity());
-
-	// Associating the data to the vertex shader
-	initBuffers(vertices, normals, colors);
-
-	// Partial illumonation terms and shininess Phong coefficient
-	gl.uniform3fv(gl.getUniformLocation(shaderProgram, "ambientProduct"), flatten(ambientProduct));
-    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "diffuseProduct"), flatten(diffuseProduct));
-    gl.uniform3fv(gl.getUniformLocation(shaderProgram, "specularProduct"), flatten(specularProduct));
-	gl.uniform1f(gl.getUniformLocation(shaderProgram, "shininess"), nPhong);
-
-	//Position of the Light Source
-	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(lightSources[0].getPosition()));
-
-    // Position of the viewer
-    var posViewer = [0.0, 0.0, 0.0, 1.0];
-    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "viewerPosition"), flatten(posViewer));
-
-	// primitiveType allows drawing as filled triangles / wireframe / vertices
-	if(primitiveType == gl.LINE_LOOP) {
-		// To simulate wireframe drawing!
-		// No faces are defined! There are no hidden lines!
-		// Taking the vertices 3 by 3 and drawing a LINE_LOOP
-		for(var i = 0; i < triangleVertexPositionBuffer.numItems / 3; i++) {
-			gl.drawArrays(primitiveType, 3 * i, 3);
-		}
-	} else {
-		gl.drawArrays(primitiveType, 0, triangleVertexPositionBuffer.numItems);
-	}
-}
-
-function drawScene() {
-    let frustumSize = 1;
-    let frustum = [
-        [-frustumSize/2, 0, frustumSize/2],
-        [frustumSize/2, 0, frustumSize/2],
-        [frustumSize/2, 0, -frustumSize/2],
-        [-frustumSize/2, 0, -frustumSize/2],
-        [0, 1, 0],
-    ];
-
-	let objs = {
-		sphere0:{
-			vertices: sphere,
-			colors: flatten(Array(36864).fill(COLORS.RED.slice(0, 3))),
-			normals: [],
-			tx: 0,
-			ty: 0,
-			tz: 0,
-			sx: 0.5,
-			sy: 0.5,
-			sz: 0.5,
-			angleXX: 0,
-			angleYY: 0,
-			angleZZ: 0,
-            primitiveType: gl.TRIANGLES
-		},
-		sphere1:{
-			vertices: sphere,
-			colors: flatten(Array(36864).fill(COLORS.GREEN.slice(0, 3))),
-			normals: [],
-			tx: 1,
-			ty: 1,
-			tz: -5,
-			sx: 0.5,
-			sy: 0.5,
-			sz: 0.5,
-			angleXX: 30,
-			angleYY: 0,
-			angleZZ: 0,
-            primitiveType: gl.TRIANGLES
-		},
-		checkered_floor:{
-			vertices: [],
-			colors: [],
-			normals: [],
-			tx: 3,
-			ty: 3,
-			tz: 0,
-			sx: 0.5,
-			sy: 0.5,
-			sz: 0.5,
-			angleXX: 0,
-			angleYY: 0,
-			angleZZ: 0,
-            primitiveType: gl.TRIANGLES
-		},
-        frustum: {
-			vertices: [
-                ...frustum[0],
-                ...frustum[3],
-                ...frustum[2],
-
-                ...frustum[0],
-                ...frustum[2],
-                ...frustum[1],
-
-                ...frustum[1],
-                ...frustum[2],
-                ...frustum[4],
-
-                ...frustum[2],
-                ...frustum[3],
-                ...frustum[4],
-
-                ...frustum[3],
-                ...frustum[0],
-                ...frustum[4],
-
-                ...frustum[0],
-                ...frustum[1],
-                ...frustum[4]
-            ],
-			colors: flatten(Array(6*3).fill([0,1,1])),
-			normals: [],
-			tx: 0,
-			ty: 0,
-			tz: 2,
-			sx: 0.5,
-			sy: 0.5,
-			sz: 0.5,
-			angleXX: 0,
-			angleYY: Math.PI * 2.8,
-			angleZZ: Math.PI * 1.5,
-            primitiveType: gl.LINE_LOOP
+class Scene {
+    constructor() {
+        this.models = []
+        if (true) {
+            this.pMatrix = perspective(45, 1, 0.05, 15)
+            this.globalTz = -4.5
+        } else {
+            this.pMatrix = ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
+            this.globalTz = 0
         }
-	};
+        this.triangleVertexPositionBuffer = null
+        this.triangleVertexNormalBuffer = null
+        this.triangleVertexColorBuffer = null
+    }
 
-	var pMatrix;
-	var mvMatrix;
-    var globalTz;
+    add(model) {
+        this.models.push(model)
+    }
 
-	// Clearing the frame-buffer and the depth-buffer
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    remove(model) {
+        this.models.pop(model)
+    }
 
-	// Computing the Projection Matrix
-	if(projectionType == 0) {
-		// For now, the default orthogonal view volume
-		pMatrix = ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+    initBuffers(vertices, normals, colors) {
+        // TODO: reorder triangle lines
 
-		// Global transformation
-		globalTz = 0.0;
+        // Vertex Coordinates
+        this.triangleVertexPositionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexPositionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        this.triangleVertexPositionBuffer.itemSize = 3;
+        this.triangleVertexPositionBuffer.numItems = vertices.length / 3;
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-		// TODO: Allow the user to control the size of the view volume
-	} else {
-		// A standard view volume.
-		// Viewer is at (0,0,0)
-		// TODO: Ensure that the model is "inside" the view volume
-		pMatrix = perspective(45, 1, 0.05, 15);
+        // Vertex Normals
+        this.triangleVertexNormalBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexNormalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+        this.triangleVertexNormalBuffer.itemSize = 3;
+        this.triangleVertexNormalBuffer.numItems = normals.length / 3;
+        gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, this.triangleVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-		// Global transformation
-		globalTz = -4.5;
-	}
+        // Colors
+        this.triangleVertexColorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexColorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+        this.triangleVertexColorBuffer.itemSize = 3;
+        this.triangleVertexColorBuffer.numItems = colors.length / 3;
+        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, this.triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    }
 
-	// Passing the Projection Matrix to apply the current projection
-	var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-	gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(pMatrix)));
+    draw() {
+        // Clearing the frame-buffer and the depth-buffer
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-	// GLOBAL TRANSFORMATION FOR THE WHOLE SCENE
-	mvMatrix = translationMatrix(0, 0, globalTz);
+        // Passing the Projection Matrix to apply the current projection
+        var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+        gl.uniformMatrix4fv(pUniform, false, new Float32Array(flatten(this.pMatrix)));
 
-    for(obj of Object.values(objs)) {
-        drawModel(
-            obj.vertices,
-            computeVertexNormals(obj.vertices),
-            obj.colors,
-            obj.angleXX, obj.angleYY, obj.angleZZ,
-            obj.sx, obj.sy, obj.sz,
-            obj.tx, obj.ty, obj.tz,
-            mvMatrix,
-            obj.primitiveType
-        );
+        // GLOBAL TRANSFORMATION FOR THE WHOLE SCENE
+        let mvMatrix = translationMatrix(0, 0, this.globalTz);
+
+        for(let model of this.models) {
+            this.drawModel(model, mvMatrix)
+        }
+    }
+
+    drawModel(model, mvMatrix) {
+        // The global model transformation is an input
+        // Concatenate with the particular model transformations
+        // Pay attention to transformation order
+        mvMatrix = mult(mvMatrix, translationMatrix(model.tx, model.ty, model.tz));
+        mvMatrix = mult(mvMatrix, rotationZZMatrix(model.angleZZ));
+        mvMatrix = mult(mvMatrix, rotationYYMatrix(model.angleYY));
+        mvMatrix = mult(mvMatrix, rotationXXMatrix(model.angleXX));
+        mvMatrix = mult(mvMatrix, scalingMatrix(model.sx, model.sy, model.sz));
+
+        // Passing the Model View Matrix to apply the current transformation
+        var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+        gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
+
+        // Multiplying the reflection coefficents
+        var ambientProduct = mult(kAmbi, lightSources[0].getAmbIntensity());
+        var diffuseProduct = mult(kDiff, lightSources[0].getIntensity());
+        var specularProduct = mult(kSpec, lightSources[0].getIntensity());
+
+        // Associating the data to the vertex shader
+        this.initBuffers(model.vertices, model.normals, model.colors);
+
+        // Set shader uniforms
+        gl.uniform3fv(gl.getUniformLocation(shaderProgram, "ambientProduct"), flatten(ambientProduct));
+        gl.uniform3fv(gl.getUniformLocation(shaderProgram, "diffuseProduct"), flatten(diffuseProduct));
+        gl.uniform3fv(gl.getUniformLocation(shaderProgram, "specularProduct"), flatten(specularProduct));
+        gl.uniform1f(gl.getUniformLocation(shaderProgram, "shininess"), nPhong);
+        gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(lightSources[0].getPosition()));
+        gl.uniform4fv(gl.getUniformLocation(shaderProgram, "viewerPosition"), flatten([0.0, 0.0, 0.0, 1.0]));
+
+        // primitiveType allows drawing as filled triangles / wireframe / vertices
+        if(model.primitive == gl.LINE_LOOP) {
+            // To simulate wireframe drawing!
+            // No faces are defined! There are no hidden lines!
+            // Taking the vertices 3 by 3 and drawing a LINE_LOOP
+            for(var i = 0; i < this.triangleVertexPositionBuffer.numItems / 3; i++) {
+                gl.drawArrays(model.primitive, 3 * i, 3);
+            }
+        } else {
+            gl.drawArrays(model.primitive, 0, this.triangleVertexPositionBuffer.numItems);
+        }
     }
 }
-

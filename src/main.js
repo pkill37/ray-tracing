@@ -51,7 +51,7 @@ function animate() {
 		if(rotationZZ_ON) angleZZ += rotationZZ_DIR * rotationZZ_SPEED * (90 * elapsed) / 1000.0;*/
 
 		// Rotating the light sources
-		for(var i = 0; i < lightSources.length; i++ ) {
+		for(var i = 0; i < lightSources.length; i++) {
 			if(lightSources[i].isRotYYOn()) {
 				var angle = lightSources[i].getRotAngleYY() + lightSources[i].getRotationSpeed() * (90 * elapsed) / 1000.0;
 				lightSources[i].setRotAngleYY(angle);
@@ -72,7 +72,7 @@ function tick() {
 function initWebGL(canvas) {
 	try {
 		gl = canvas.getContext("webgl2");
-        gl.clearColor(...[Math.random(), Math.random(), Math.random(), 1]);
+        gl.clearColor(...COLORS.BLACK);
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
 		gl.enable(gl.DEPTH_TEST);

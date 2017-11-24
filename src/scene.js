@@ -46,7 +46,7 @@ function drawScene() {
 	let objs = {
 		sphere0:{
 			vertices: sphere,
-			colors:flatten(Array(36864).fill([1, 0, 0])),
+			colors:flatten(Array(36864).fill(COLORS.RED.slice(0, 3))),
 			normals:[],
 			tx:0,
 			ty:0,
@@ -61,7 +61,7 @@ function drawScene() {
 		}, 
 		sphere1:{
 			vertices:sphere,
-			colors:flatten(Array(36864).fill([0, 1, 0])),
+			colors:flatten(Array(36864).fill(COLORS.GREEN.slice(0, 3))),
 			normals:[],
 			tx:1,
 			ty:1,

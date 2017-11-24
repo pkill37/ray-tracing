@@ -92,6 +92,7 @@ function drawScene() {
 	var pMatrix;
 	var mvMatrix = mat4();
     var globalTz;
+
 	// Clearing the frame-buffer and the depth-buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -125,15 +126,17 @@ function drawScene() {
 	// GLOBAL TRANSFORMATION FOR THE WHOLE SCENE
 	mvMatrix = translationMatrix(0, 0, globalTz);
 
-	for(obj of Object.values(objs)){
-		drawModel(obj.vertices,
-				  computeVertexNormals(obj.vertices),
-				  obj.colors,
-	              obj.angleXX, obj.angleYY, obj.angleZZ,
-		          obj.sx, obj.sy, obj.sz,
-		          obj.tx, obj.ty, obj.tz,
-		          mvMatrix,
-		          primitiveType);
-	}
+    for(obj of Object.values(objs)) {
+        drawModel(
+            obj.vertices,
+            computeVertexNormals(obj.vertices),
+            obj.colors,
+            obj.angleXX, obj.angleYY, obj.angleZZ,
+            obj.sx, obj.sy, obj.sz,
+            obj.tx, obj.ty, obj.tz,
+            mvMatrix,
+            primitiveType
+        );
+    }
 }
 

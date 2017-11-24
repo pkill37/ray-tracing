@@ -26,9 +26,6 @@ var rotationZZ_ON = 1;
 var rotationZZ_DIR = 1;
 var rotationZZ_SPEED = 1;
 
-// To allow choosing the way of drawing the model triangles
-var primitiveType = null;
-
 // To allow choosing the projection type
 var projectionType = 1;
 

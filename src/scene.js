@@ -47,54 +47,104 @@ function drawModel(vertices, normals, colors, angleXX, angleYY, angleZZ, sx, sy,
 }
 
 function drawScene() {
+    let frustumSize = 1;
+    let frustum = [
+        [-frustumSize/2, 0, frustumSize/2],
+        [frustumSize/2, 0, frustumSize/2],
+        [frustumSize/2, 0, -frustumSize/2],
+        [-frustumSize/2, 0, -frustumSize/2],
+        [0, 1, 0],
+    ];
+
 	let objs = {
 		sphere0:{
 			vertices: sphere,
-			colors:flatten(Array(36864).fill(COLORS.RED.slice(0, 3))),
-			normals:[],
-			tx:0,
-			ty:0,
-			tz:0,
-			sx:0.5,
-			sy:0.5,
-			sz:0.5,
-			angleXX:0,
-			angleYY:0,
-			angleZZ:0,
-			
-		}, 
+			colors: flatten(Array(36864).fill(COLORS.RED.slice(0, 3))),
+			normals: [],
+			tx: 0,
+			ty: 0,
+			tz: 0,
+			sx: 0.5,
+			sy: 0.5,
+			sz: 0.5,
+			angleXX: 0,
+			angleYY: 0,
+			angleZZ: 0,
+            primitiveType: gl.TRIANGLES
+		},
 		sphere1:{
-			vertices:sphere,
-			colors:flatten(Array(36864).fill(COLORS.GREEN.slice(0, 3))),
-			normals:[],
-			tx:1,
-			ty:1,
-			tz:-5,
-			sx:0.5,
-			sy:0.5,
-			sz:0.5,
-			angleXX:0,
-			angleYY:0,
-			angleZZ:0
-
-		}, 
+			vertices: sphere,
+			colors: flatten(Array(36864).fill(COLORS.GREEN.slice(0, 3))),
+			normals: [],
+			tx: 1,
+			ty: 1,
+			tz: -5,
+			sx: 0.5,
+			sy: 0.5,
+			sz: 0.5,
+			angleXX: 30,
+			angleYY: 0,
+			angleZZ: 0,
+            primitiveType: gl.TRIANGLES
+		},
 		checkered_floor:{
-			vertices:[],
-			colors:[],
-			normals:[],
-			tx:3,
-			ty:3,
-			tz:0,
-			sx:0.5,
-			sy:0.5,
-			sz:0.5,
-			angleXX:0,
-			angleYY:0,
-			angleZZ:0
-		}
+			vertices: [],
+			colors: [],
+			normals: [],
+			tx: 3,
+			ty: 3,
+			tz: 0,
+			sx: 0.5,
+			sy: 0.5,
+			sz: 0.5,
+			angleXX: 0,
+			angleYY: 0,
+			angleZZ: 0,
+            primitiveType: gl.TRIANGLES
+		},
+        frustum: {
+			vertices: [
+                ...frustum[0],
+                ...frustum[3],
+                ...frustum[2],
+
+                ...frustum[0],
+                ...frustum[2],
+                ...frustum[1],
+
+                ...frustum[1],
+                ...frustum[2],
+                ...frustum[4],
+
+                ...frustum[2],
+                ...frustum[3],
+                ...frustum[4],
+
+                ...frustum[3],
+                ...frustum[0],
+                ...frustum[4],
+
+                ...frustum[0],
+                ...frustum[1],
+                ...frustum[4]
+            ],
+			colors: flatten(Array(6*3).fill([0,1,1])),
+			normals: [],
+			tx: 0,
+			ty: 0,
+			tz: 2,
+			sx: 0.5,
+			sy: 0.5,
+			sz: 0.5,
+			angleXX: 0,
+			angleYY: Math.PI * 2.8,
+			angleZZ: Math.PI * 1.5,
+            primitiveType: gl.LINE_LOOP
+        }
 	};
+
 	var pMatrix;
-	var mvMatrix = mat4();
+	var mvMatrix;
     var globalTz;
 
 	// Clearing the frame-buffer and the depth-buffer
@@ -135,7 +185,7 @@ function drawScene() {
             obj.sx, obj.sy, obj.sz,
             obj.tx, obj.ty, obj.tz,
             mvMatrix,
-            primitiveType
+            obj.primitiveType
         );
     }
 }

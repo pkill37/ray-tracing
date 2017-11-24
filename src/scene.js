@@ -29,6 +29,10 @@ function drawModel(vertices, normals, colors, angleXX, angleYY, angleZZ, sx, sy,
 	//Position of the Light Source
 	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(lightSources[0].getPosition()));
 
+    // Position of the viewer
+    var posViewer = [0.0, 0.0, 0.0, 1.0];
+    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "viewerPosition"), flatten(posViewer));
+
 	// primitiveType allows drawing as filled triangles / wireframe / vertices
 	if(primitiveType == gl.LINE_LOOP) {
 		// To simulate wireframe drawing!
@@ -101,22 +105,18 @@ function drawScene() {
 		// For now, the default orthogonal view volume
 		pMatrix = ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
 
-		// Global transformation !!
+		// Global transformation
 		globalTz = 0.0;
 
-		// TO BE DONE !
-		// Allow the user to control the size of the view volume
+		// TODO: Allow the user to control the size of the view volume
 	} else {
 		// A standard view volume.
 		// Viewer is at (0,0,0)
-		// Ensure that the model is "inside" the view volume
+		// TODO: Ensure that the model is "inside" the view volume
 		pMatrix = perspective(45, 1, 0.05, 15);
 
-		// Global transformation !!
+		// Global transformation
 		globalTz = -4.5;
-
-		// TO BE DONE !
-		// Allow the user to control the size of the view volume
 	}
 
 	// Passing the Projection Matrix to apply the current projection

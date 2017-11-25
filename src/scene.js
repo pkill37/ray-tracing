@@ -11,6 +11,7 @@ class Scene {
         this.triangleVertexPositionBuffer = null
         this.triangleVertexNormalBuffer = null
         this.triangleVertexColorBuffer = null
+        this.globalRotation = [0,0,0];
     }
 
     add(model) {
@@ -59,6 +60,13 @@ class Scene {
 
         // GLOBAL TRANSFORMATION FOR THE WHOLE SCENE
         let mvMatrix = translationMatrix(0, 0, this.globalTz);
+
+        // Global rotation
+        mvMatrix = mult(mvMatrix, rotationZZMatrix(this.globalRotation[2]));
+        mvMatrix = mult(mvMatrix, rotationYYMatrix(this.globalRotation[1]));
+        mvMatrix = mult(mvMatrix, rotationXXMatrix(this.globalRotation[0]));
+
+        //console.log(this.globalRotation)
 
         for(let model of this.models) {
             this.drawModel(model, mvMatrix)

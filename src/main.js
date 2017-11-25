@@ -6,7 +6,11 @@ class Application {
         this.canvas = document.getElementById("canvas");
         gl = this.initWebGL()
         shaderProgram = this.initShaders();
-        this.scene = new Scene()
+        this.scene = new Scene();
+        this.mouseDown = false;
+		this.lastMouseX = null;
+		this.lastMouseY = null;
+		this.setEventListeners();
     }
 
     initWebGL() {
@@ -60,6 +64,52 @@ class Application {
         this.tick()
     }
 
+    setEventListeners(){
+		console.log("turing, ", this.scene)
+		let self = this
+
+
+		// Mouse Events 
+
+	    this.canvas.onmousedown = function handleMouseDown(event) {
+		    self.mouseDown = true;
+		    self.lastMouseX = event.clientX;
+		    self.lastMouseY = event.clientY;
+		}
+
+
+		this.canvas.onscroll = function handleScroll(event){
+			console.log(event)
+		}
+
+	    
+	    document.onmouseup = function handleMouseUp(event) {
+	    	self.mouseDown = false;
+		}
+	    
+	    document.onmousemove = function handleMouseMove(event) {
+		    if (!self.mouseDown) {
+			  
+		      return;
+		    } 
+		  
+		    // Rotation angles proportional to cursor displacement
+		    var newX = event.clientX;
+		    var newY = event.clientY;
+		    var deltaX = newX - self.lastMouseX;
+		    var deltaY = newY - self.lastMouseY;
+		    
+
+		    self.scene.globalRotation[1] += radians( 20 * deltaX  )
+		    self.scene.globalRotation[0] += radians( 20 * deltaY  )
+
+
+		    self.lastMouseX = newX;
+		    self.lastMouseY = newY;
+  		}
+
+	}
+	
     tick() {
         requestAnimationFrame(() => this.tick())
         resizeCanvasToDisplaySize(gl.canvas)
@@ -72,3 +122,5 @@ function ready(){
     let app = new Application()
     app.start()
 }
+
+

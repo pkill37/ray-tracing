@@ -45,3 +45,17 @@ function resizeCanvasToDisplaySize(canvas, multiplier) {
     }
     return false;
 }
+
+function squareAt(m3, v) {
+ var retm = []
+ for(var i= 0; i < m3.length; i++)
+     retm.push(m3[i] + v[i%3]);
+ return retm;
+}
+
+function repeat(arr, n){
+  var a = [];
+  for (var i=0;i<n;[i++].push.apply(a,arr));
+  return a;
+}
+

@@ -2,7 +2,7 @@ class Scene {
     constructor() {
         this.models = []
         if (true) {
-            this.pMatrix = perspective(45, 1, 0.05, 15)
+            this.pMatrix = perspective(100, 1, 0.05, 50);
             this.globalTz = -4.5
         } else {
             this.pMatrix = ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
@@ -107,3 +107,42 @@ class Scene {
         }
     }
 }
+
+// dimen: Number of squares  
+// size: Dimension of each square
+function getCheckeredFloor(dimen,size){
+	var coord_square = size/2
+	//origin at center
+	let base_vertices = [
+		 -coord_square,  0.0,   coord_square,
+		 coord_square,  0.0,   coord_square,
+		 -coord_square,  0.0,   -coord_square,
+
+		 coord_square,  0.0,  coord_square,
+		 coord_square,  0.0,  -coord_square,
+		 -coord_square,  0.0, -coord_square,
+	];
+
+	let base_color2= repeat(COLORS.BLACK.slice(0,3), base_vertices.length / 3);
+	let base_color1 = repeat(COLORS.WHITE.slice(0,3), base_vertices.length / 3)
+
+	let vertices = []
+	let colors = []
+	let floor_v = -dimen*size / 2;
+
+	for(var i = 0; i < dimen; i++) {
+		for(var j = 0; j < dimen; j++) {
+	 		vertices.push(squareAt(base_vertices,[floor_v+j*size,0,floor_v+i*size]))
+	 		colors.push((j+i)%2 == 0 ? base_color1 : base_color2);
+	 	}
+	}
+
+	vertices = flatten(vertices)
+	colors = flatten(colors)
+
+	return {
+		"vertices": vertices,
+		"colors": colors,
+	}
+}
+

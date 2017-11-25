@@ -18,9 +18,26 @@ class App {
         let y = parseFloat(document.getElementById('sphere-y').value)
         let z = parseFloat(document.getElementById('sphere-z').value)
         let color = document.getElementById('sphere-color').value
+        console.log('Add sphere', x, y, z, color)
+        
+        switch(color) {
+            case 'yellow':
+                color = COLORS.YELLOW
+                break
+            case 'red':
+                color = COLORS.RED
+                break
+            case 'blue':
+                color = COLORS.BLUE
+                break
+            case 'green':
+                color = COLORS.GREEN
+                break
+            default:
+                color = COLORS.BLACK
+        }
 
-        console.log('You clicked the shit out of this button', x, y, z)
-        this.canvas.scene.add(new Sphere(COLORS.YELLOW, null, [x, y, z]))
+        this.canvas.scene.add(new Sphere(color, null, [x, y, z]))
     }
 
     handleAddCamera() {
@@ -28,8 +45,8 @@ class App {
         let y = parseFloat(document.getElementById('camera-y').value)
         let z = parseFloat(document.getElementById('camera-z').value)
 
-        console.log('You clicked the shit out of this button', x, y, z)
-        this.canvas.scene.add(new Frustum(COLORS.YELLOW, null, [x, y, z]))
+        console.log('Add camera', x, y, z)
+        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [x, y, z-frustumHeight], [90, 0, 0]))
     }
 
     start() {

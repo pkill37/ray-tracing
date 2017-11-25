@@ -1,11 +1,12 @@
-let frustumSize = 1;
+let frustumSize = 1
+let frustumHeight = 2
 let frustumUniqVertices = [
     [-frustumSize/2, 0, frustumSize/2],
     [frustumSize/2, 0, frustumSize/2],
     [frustumSize/2, 0, -frustumSize/2],
     [-frustumSize/2, 0, -frustumSize/2],
-    [0, 1, 0],
-];
+    [0, frustumHeight, 0],
+]
 let frustumVertices = [
     ...frustumUniqVertices[0],
     ...frustumUniqVertices[3],
@@ -30,5 +31,5 @@ let frustumVertices = [
     ...frustumUniqVertices[0],
     ...frustumUniqVertices[1],
     ...frustumUniqVertices[4]
-];
+]
 

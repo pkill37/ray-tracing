@@ -47,17 +47,14 @@ class Canvas {
 
     start() {
         let checkered_floor = getCheckeredFloor(100, 1)
+        let axis = 1000
         let models = [
-            new Frustum(COLORS.BLUE, null, [0, 0, 2], [0, Math.PI*2.8, Math.PI*1.5]),
-
             new Sphere(COLORS.GREEN, null, [1, 1, -5]),
             new Sphere(COLORS.RED, null, [0, 0, 0]),
 
-            new Line([-1, 0, 1], [1, 0, 1], COLORS.BLACK, [1, 1, -5]),
-
-            new Line([0, 0, 0], [1000, 0, 0], COLORS.RED),
-            new Line([0, 0, 0], [0, 1000, 0], COLORS.GREEN),
-            new Line([0, 0, 0], [0, 0, 1000], COLORS.BLUE),
+            new Line([0, 0, 0], [axis, 0, 0], COLORS.RED),
+            new Line([0, 0, 0], [0, axis, 0], COLORS.GREEN),
+            new Line([0, 0, 0], [0, 0, axis], COLORS.BLUE),
 
             new Floor(checkered_floor['vertices'], checkered_floor['colors'], null, [0, -2, -10])
         ]

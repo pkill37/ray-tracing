@@ -1,6 +1,6 @@
 class Sphere extends Model {
-    constructor(vertices, colors, mvMatrix, translation, rotation, scale) {
-        super(vertices, colors, mvMatrix, gl.TRIANGLES, translation, rotation, scale);
+    constructor(color, mvMatrix, translation, rotation, scale) {
+        super(sphereVertices, flatten(Array(sphereVertices.length/3).fill(color.slice(0, 3))), mvMatrix, gl.TRIANGLES, translation, rotation, scale);
     }
 }
 

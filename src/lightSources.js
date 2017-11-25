@@ -1,35 +1,24 @@
 function LightSource( ) {
-	
 	// A new light source is always on
-	
 	this.isOn = true;
 	
 	// And is directional
-	
 	this.position = [ 0.0, 0.0, 1.0, 0.0 ];
 	
 	// White light
-	
 	this.intensity = [ 1.0, 1.0, 1.0 ];
 	
 	// Ambient component
-	
 	this.ambientIntensity = [ 0.2, 0.2, 0.2 ];
 	
 	// Animation controls
-	
 	this.rotXXOn = false;
-	
 	this.rotYYOn = false;
-	
 	this.rotZZOn = false;
 	
 	// Rotation angles	
-	
 	this.rotAngleXX = 0.0;
-	
 	this.rotAngleYY = 0.0;
-	
 	this.rotAngleZZ = 0.0;	
 	
 	// NEW --- Rotation speed factor - Allow different speeds
@@ -154,5 +143,5 @@ lightSources.push( new LightSource() );
 lightSources[0].setPosition(1.0, 1.0, 1.0, 0.0);
 lightSources[0].setIntensity(1.0, 1.0, 1.0);
 lightSources[0].setAmbIntensity(0.2, 0.2, 0.2);
-lightSources[0].switchRotYYOn();
+//lightSources[0].switchRotYYOn();
 

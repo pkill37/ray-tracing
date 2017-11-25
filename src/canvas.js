@@ -1,7 +1,7 @@
 var gl = null;
 var shaderProgram = null;
 
-class Application {
+class Canvas {
     constructor() {
         this.canvas = document.getElementById("canvas");
         gl = this.initWebGL()
@@ -14,8 +14,7 @@ class Application {
     }
 
     initWebGL() {
-        try {
-            gl = this.canvas.getContext("webgl2");
+        try { gl = this.canvas.getContext("webgl2");
             gl.clearColor(...COLORS.SKY_BLUE);
             gl.cullFace(gl.BACK);
             gl.enable(gl.DEPTH_TEST);
@@ -49,15 +48,16 @@ class Application {
     start() {
         let checkered_floor = getCheckeredFloor(100, 1)
         let models = [
-            new Sphere(sphereVertices, flatten(Array(36864).fill(COLORS.GREEN.slice(0, 3))), null, [1, 1, -5]),
-            new Sphere(sphereVertices, flatten(Array(36864).fill(COLORS.RED.slice(0, 3))), null, [0, 0, 0]),
-            new Frustum(frustumVertices, flatten(Array(6*3).fill(COLORS.BLUE.slice(0,3))), null, [0, 0, 2], [0, Math.PI*2.8, Math.PI*1.5]),
+            new Frustum(COLORS.BLUE, null, [0, 0, 2], [0, Math.PI*2.8, Math.PI*1.5]),
 
-            new Line([-1, 0, 1], [1, 0, 1], COLORS.BLACK.slice(0,3), [1, 1, -5]),
+            new Sphere(COLORS.GREEN, null, [1, 1, -5]),
+            new Sphere(COLORS.RED, null, [0, 0, 0]),
 
-            new Line([0, 0, 0], [5, 0, 0], COLORS.RED.slice(0,3)),
-            new Line([0, 0, 0], [0, 5, 0], COLORS.GREEN.slice(0,3)),
-            new Line([0, 0, 0], [0, 0, 5], COLORS.BLUE.slice(0,3)),
+            new Line([-1, 0, 1], [1, 0, 1], COLORS.BLACK, [1, 1, -5]),
+
+            new Line([0, 0, 0], [1000, 0, 0], COLORS.RED),
+            new Line([0, 0, 0], [0, 1000, 0], COLORS.GREEN),
+            new Line([0, 0, 0], [0, 0, 1000], COLORS.BLUE),
 
             new Floor(checkered_floor['vertices'], checkered_floor['colors'], null, [0, -2, -10])
         ]
@@ -109,10 +109,5 @@ class Application {
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
         this.scene.draw()
     }
-}
-
-function ready(){
-    let app = new Application()
-    app.start()
 }
 

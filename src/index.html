@@ -4,7 +4,6 @@
         <meta charset="utf-8">
         <title>Ray Tracing</title>
         <link rel="stylesheet" href="styles/shoelace.css">
-        <!--<link rel="stylesheet" href="https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/fonts.css">-->
         <link rel="stylesheet" href="styles/main.css">
 
         <script src="illumination.js"></script>
@@ -27,7 +26,9 @@
         <script src="data/frustum.js"></script>
         <script src="data/floor_vert.js"></script>
         <script src="scene.js"></script>
-        <script src="main.js"></script>
+
+        <script src="canvas.js"></script>
+        <script src="app.js"></script>
     </head>
 
     <body onload="ready()">
@@ -35,14 +36,44 @@
             <div class="row mar-0">
                 <div class="col-4 pad-0">
                     <main id="main">
+                        <h1>Configuration</h1>
+
+                        <div>
+                            <p>Sphere</p>
+                            X: <input id="sphere-x" class="inline input-coordinate" type="number">
+                            Y: <input id="sphere-y" class="input-coordinate" type="number">
+                            Z: <input id="sphere-z" class="input-coordinate" type="number">
+                            <select class="custom-select">
+                                <option value="red" selected>Red</option>
+                                <option value="green">Green</option>
+                                <option value="blue">Blue</option>
+                            </select>
+                            
+                            <button id="sphere-add" type="button">Add Sphere</button>
+                        </div>
+
+                        <div>
+                            <p>Camera</p>
+                            X: <input id="camera-x" class="inline input-coordinate" type="number">
+                            Y: <input id="camera-y" class="input-coordinate" type="number">
+                            Z: <input id="camera-z" class="input-coordinate" type="number">
+                            
+                            <button id="camera-add" type="button">Add Camera</button>
+                        </div>
+
                         <h1>Ray Tracing</h1>
-                        <p>Optical ray tracing describes a method for producing visual images constructed in 3D computer graphics environments, with more photorealism than either ray casting or scanline rendering techniques. It works by tracing a path from an imaginary eye through each pixel in a virtual screen, and calculating the color of the object visible through it.</p>
 
-                        <p>Typically, each ray must be tested for intersection with some subset of all the objects in the scene. Once the nearest object has been identified, the algorithm will estimate the incoming light at the point of intersection, examine the material properties of the object, and combine this information to calculate the final color of the pixel. Certain illumination algorithms and reflective or translucent materials may require more rays to be re-cast into the scene.</p>
+                        <div>
+                            <p>Optical ray tracing describes a method for producing visual images constructed in 3D computer graphics environments, with more photorealism than either ray casting or scanline rendering techniques. It works by tracing a path from an imaginary eye through each pixel in a virtual screen, and calculating the color of the object visible through it.</p>
 
-                        <p>It may at first seem counterintuitive or "backwards" to send rays away from the camera, rather than into it (as actual light does in reality), but doing so is many orders of magnitude more efficient. Since the overwhelming majority of light rays from a given light source do not make it directly into the viewer's eye, a "forward" simulation could potentially waste a tremendous amount of computation on light paths that are never recorded.</p>
 
-                        <p>Therefore, the shortcut taken in raytracing is to presuppose that a given ray intersects the view frame. After either a maximum number of reflections or a ray traveling a certain distance without intersection, the ray ceases to travel and the pixel's value is updated.</p>
+                            <p>Typically, each ray must be tested for intersection with some subset of all the objects in the scene. Once the nearest object has been identified, the algorithm will estimate the incoming light at the point of intersection, examine the material properties of the object, and combine this information to calculate the final color of the pixel. Certain illumination algorithms and reflective or translucent materials may require more rays to be re-cast into the scene.</p>
+
+                            <p>It may at first seem counterintuitive or "backwards" to send rays away from the camera, rather than into it (as actual light does in reality), but doing so is many orders of magnitude more efficient. Since the overwhelming majority of light rays from a given light source do not make it directly into the viewer's eye, a "forward" simulation could potentially waste a tremendous amount of computation on light paths that are never recorded.</p>
+
+                            <p>Therefore, the shortcut taken in raytracing is to presuppose that a given ray intersects the view frame. After either a maximum number of reflections or a ray traveling a certain distance without intersection, the ray ceases to travel and the pixel's value is updated.</p>
+                        </div>
+
                     </main>
                 </div>
 

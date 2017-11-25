@@ -5,7 +5,7 @@ class Application {
     constructor() {
         this.canvas = document.getElementById("canvas");
         gl = this.initWebGL()
-        shaderProgram = initShaders(gl);
+        shaderProgram = this.initShaders();
         this.scene = new Scene()
     }
 
@@ -22,7 +22,7 @@ class Application {
         return gl
     }
 
-    initShaders(gl) {
+    initShaders() {
         var fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
         var vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
         var shaderProgram = createProgram(gl, vertexShader, fragmentShader);

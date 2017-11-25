@@ -87,24 +87,3 @@ const vertexShaderSource = `
     }
 `;
 
-function initShaders(gl) {
-    var fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
-    var vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
-    var shaderProgram = createProgram(gl, vertexShader, fragmentShader);
-    gl.useProgram(shaderProgram);
-
-    // Coordinates
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "vPosition");
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-
-    // Colors
-    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "vColor");
-    gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
-
-    // Normals
-    shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "vNormal");
-    gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
-
-    return shaderProgram;
-}
-

@@ -30,6 +30,10 @@ function drawModel(vertices, normals, colors, angleXX, angleYY, angleZZ, sx, sy,
 	//Position of the Light Source
 	gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(lightSources[0].getPosition()));
 
+    // Position of the viewer
+    var posViewer = [0.0, 0.0, 0.0, 1.0];
+    gl.uniform4fv(gl.getUniformLocation(shaderProgram, "viewerPosition"), flatten(posViewer));
+
 	// primitiveType allows drawing as filled triangles / wireframe / vertices
 	if(primitiveType == gl.LINE_LOOP) {
 		// To simulate wireframe drawing!
@@ -44,8 +48,15 @@ function drawModel(vertices, normals, colors, angleXX, angleYY, angleZZ, sx, sy,
 }
 
 function drawScene() {
-
-	floor_v_c = getCheckeredFloor(25,1);
+	let floor_v_c = getCheckeredFloor(25,1);
+    let frustumSize = 1;
+    let frustum = [
+        [-frustumSize/2, 0, frustumSize/2],
+        [frustumSize/2, 0, frustumSize/2],
+        [frustumSize/2, 0, -frustumSize/2],
+        [-frustumSize/2, 0, -frustumSize/2],
+        [0, 1, 0],
+    ];
 
 	let objs = {
 		sphere0:{
@@ -59,7 +70,7 @@ function drawScene() {
 			sy: 0.5,
 			sz: 0.5,
 			angleXX: 0,
-			angleYY: globalAngleYY ,
+			angleYY: 0,
 			angleZZ: 0,
             primitiveType: gl.TRIANGLES
 		},
@@ -74,7 +85,7 @@ function drawScene() {
 			sy: 0.5,
 			sz: 0.5,
 			angleXX: 30,
-			angleYY: globalAngleYY,
+			angleYY: 0,
 			angleZZ: 0,
             primitiveType: gl.TRIANGLES
 		},
@@ -91,12 +102,52 @@ function drawScene() {
 			sz:1,
 			angleXX:0,
 			angleYY:0,
-			angleZZ:0
-		}
+			angleZZ:0,
+			primitiveType: gl.TRIANGLES
+		},
+        frustum: {
+			vertices: [
+                ...frustum[0],
+                ...frustum[3],
+                ...frustum[2],
+
+                ...frustum[0],
+                ...frustum[2],
+                ...frustum[1],
+
+                ...frustum[1],
+                ...frustum[2],
+                ...frustum[4],
+
+                ...frustum[2],
+                ...frustum[3],
+                ...frustum[4],
+
+                ...frustum[3],
+                ...frustum[0],
+                ...frustum[4],
+
+                ...frustum[0],
+                ...frustum[1],
+                ...frustum[4]
+            ],
+			colors: flatten(Array(6*3).fill([0,1,1])),
+			normals: [],
+			tx: 0,
+			ty: 0,
+			tz: 2,
+			sx: 0.5,
+			sy: 0.5,
+			sz: 0.5,
+			angleXX: 0,
+			angleYY: Math.PI * 2.8,
+			angleZZ: Math.PI * 1.5,
+            primitiveType: gl.LINE_LOOP
+        }
 	};
 
 	var pMatrix;
-	var mvMatrix = mat4();
+	var mvMatrix;
     var globalTz;
 
 	// Clearing the frame-buffer and the depth-buffer
@@ -107,22 +158,18 @@ function drawScene() {
 		// For now, the default orthogonal view volume
 		pMatrix = ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
 
-		// Global transformation !!
+		// Global transformation
 		globalTz = 0.0;
 
-		// TO BE DONE !
-		// Allow the user to control the size of the view volume
+		// TODO: Allow the user to control the size of the view volume
 	} else {
 		// A standard view volume.
 		// Viewer is at (0,0,0)
-		// Ensure that the model is "inside" the view volume
+		// TODO: Ensure that the model is "inside" the view volume
 		pMatrix = perspective(100, 1, 0.05, 50);
 
-		// Global transformation !!
+		// Global transformation
 		globalTz = -4.5;
-
-		// TO BE DONE !
-		// Allow the user to control the size of the view volume
 	}
 
 	// Passing the Projection Matrix to apply the current projection
@@ -141,7 +188,7 @@ function drawScene() {
             obj.sx, obj.sy, obj.sz,
             obj.tx, obj.ty, obj.tz,
             mvMatrix,
-            primitiveType
+            obj.primitiveType
         );
     }
 }

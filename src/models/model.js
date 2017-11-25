@@ -1,13 +1,13 @@
 class Model {
-    constructor(vertices, colors, rotation, scale, translation, mvMatrix, primitive) {
+    constructor(vertices, colors, mvMatrix, primitive = gl.TRIANGLES, translation = [0, 0, 0], rotation = [0, 0, 0], scale = [0.5, 0.5, 0.5]) {
         this.vertices = vertices
         this.colors = colors
         this.normals = computeVertexNormals(vertices)
-        this.rotation = rotation
-        this.scale = scale
-        this.translation = translation
         this.mvMatrix = mvMatrix
         this.primitive = primitive
+        this.translation = translation
+        this.rotation = rotation
+        this.scale = scale
         console.log(this)
     }
 }

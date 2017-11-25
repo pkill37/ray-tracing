@@ -1,5 +1,5 @@
 class Frustum extends Model {
-    constructor(vertices, colors, rotation, scale, translation, mvMatrix) {
-        super(vertices, colors, rotation, scale, translation, mvMatrix, gl.LINE_LOOP);
+    constructor(vertices, colors, mvMatrix, translation, rotation, scale) {
+        super(vertices, colors, mvMatrix, gl.LINE_LOOP, translation, rotation, scale);
     }
 }

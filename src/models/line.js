@@ -1,5 +1,5 @@
 class Line extends Model {
-    constructor(a, b, color) {
-        super([...a, ...b], [...color, ...color], [0, 0, 0], [0, 0, 0], [1, 1, 4], null, gl.LINES);
+    constructor(a, b, color, translation, rotation, scale) {
+        super([...a, ...b], [...color, ...color], null, gl.LINES, translation, rotation, scale);
     }
 }

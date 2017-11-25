@@ -1,25 +1,21 @@
 class Scene {
     constructor() {
         this.models = []
-        if (true) {
-            this.pMatrix = perspective(100, 1, 0.05, 50);
-            this.globalTz = -4.5
-        } else {
-            this.pMatrix = ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
-            this.globalTz = 0
-        }
+        this.lights = []
+        this.pMatrix = perspective(100, 1, 0.05, 50)
+        this.globalTz = -4.5
         this.triangleVertexPositionBuffer = null
         this.triangleVertexNormalBuffer = null
         this.triangleVertexColorBuffer = null
-        this.globalRotation = [0,0,0];
+        this.globalRotation = [0, 0, 0]
     }
 
     add(model) {
         this.models.push(model)
     }
 
-    remove(model) {
-        this.models.pop(model)
+    addLight(light) {
+        this.lights.push(light)
     }
 
     initBuffers(vertices, normals, colors) {
@@ -88,9 +84,9 @@ class Scene {
         gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
 
         // Multiplying the reflection coefficents
-        var ambientProduct = mult(kAmbi, lightSources[0].getAmbIntensity());
-        var diffuseProduct = mult(kDiff, lightSources[0].getIntensity());
-        var specularProduct = mult(kSpec, lightSources[0].getIntensity());
+        var ambientProduct = mult(kAmbi, this.lights[0].ambientIntensity);
+        var diffuseProduct = mult(kDiff, this.lights[0].intensity);
+        var specularProduct = mult(kSpec, this.lights[0].intensity);
 
         // Associating the data to the vertex shader
         this.initBuffers(model.vertices, model.normals, model.colors);
@@ -100,7 +96,7 @@ class Scene {
         gl.uniform3fv(gl.getUniformLocation(shaderProgram, "diffuseProduct"), flatten(diffuseProduct));
         gl.uniform3fv(gl.getUniformLocation(shaderProgram, "specularProduct"), flatten(specularProduct));
         gl.uniform1f(gl.getUniformLocation(shaderProgram, "shininess"), nPhong);
-        gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(lightSources[0].getPosition()));
+        gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(this.lights[0].position));
         gl.uniform4fv(gl.getUniformLocation(shaderProgram, "viewerPosition"), flatten([0.0, 0.0, 0.0, 1.0]));
 
         if(model.primitive == gl.LINE_LOOP) {

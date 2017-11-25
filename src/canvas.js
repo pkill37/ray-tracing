@@ -63,6 +63,14 @@ class Canvas {
             this.scene.add(model)
         }
 
+        let lights = [
+            new LightSource([1,1,1,0], [1,1,1], [0.2,0.2,0.2])
+        ]
+
+        for(let light of lights) {
+            this.scene.addLight(light)
+        }
+
         this.tick()
     }
 

@@ -17,6 +17,7 @@ function drawModel(vertices, normals, colors, angleXX, angleYY, angleZZ, sx, sy,
     var diffuseProduct = mult(kDiff, lightSources[0].getIntensity());
     var specularProduct = mult(kSpec, lightSources[0].getIntensity());
 
+
 	// Associating the data to the vertex shader
 	initBuffers(vertices, normals, colors);
 
@@ -43,52 +44,57 @@ function drawModel(vertices, normals, colors, angleXX, angleYY, angleZZ, sx, sy,
 }
 
 function drawScene() {
+
+	floor_v_c = getCheckeredFloor(25,1);
+
 	let objs = {
 		sphere0:{
 			vertices: sphere,
-			colors:flatten(Array(36864).fill(COLORS.RED.slice(0, 3))),
+			colors: flatten(Array(36864).fill(COLORS.RED.slice(0, 3))),
+			normals: [],
+			tx: 0,
+			ty: 0,
+			tz: 0,
+			sx: 0.5,
+			sy: 0.5,
+			sz: 0.5,
+			angleXX: 0,
+			angleYY: globalAngleYY ,
+			angleZZ: 0,
+            primitiveType: gl.TRIANGLES
+		},
+		sphere1:{
+			vertices: sphere,
+			colors: flatten(Array(36864).fill(COLORS.GREEN.slice(0, 3))),
+			normals: [],
+			tx: 1,
+			ty: 1,
+			tz: -5,
+			sx: 0.5,
+			sy: 0.5,
+			sz: 0.5,
+			angleXX: 30,
+			angleYY: globalAngleYY,
+			angleZZ: 0,
+            primitiveType: gl.TRIANGLES
+		},
+		checkered_floor:
+		{
+			vertices:floor_v_c["vertices"],
+			colors:floor_v_c["colors"],
 			normals:[],
 			tx:0,
-			ty:0,
-			tz:0,
-			sx:0.5,
-			sy:0.5,
-			sz:0.5,
-			angleXX:0,
-			angleYY:0,
-			angleZZ:0,
-			
-		}, 
-		sphere1:{
-			vertices:sphere,
-			colors:flatten(Array(36864).fill(COLORS.GREEN.slice(0, 3))),
-			normals:[],
-			tx:1,
-			ty:1,
-			tz:-5,
-			sx:0.5,
-			sy:0.5,
-			sz:0.5,
-			angleXX:0,
-			angleYY:0,
-			angleZZ:0
-
-		}, 
-		checkered_floor:{
-			vertices:[],
-			colors:[],
-			normals:[],
-			tx:3,
-			ty:3,
-			tz:0,
-			sx:0.5,
-			sy:0.5,
-			sz:0.5,
+			ty:-10,
+			tz:-10,
+			sx:1,
+			sy:1,
+			sz:1,
 			angleXX:0,
 			angleYY:0,
 			angleZZ:0
 		}
 	};
+
 	var pMatrix;
 	var mvMatrix = mat4();
     var globalTz;
@@ -110,7 +116,7 @@ function drawScene() {
 		// A standard view volume.
 		// Viewer is at (0,0,0)
 		// Ensure that the model is "inside" the view volume
-		pMatrix = perspective(45, 1, 0.05, 15);
+		pMatrix = perspective(100, 1, 0.05, 50);
 
 		// Global transformation !!
 		globalTz = -4.5;
@@ -139,4 +145,71 @@ function drawScene() {
         );
     }
 }
+
+
+// dimen: Number of squares  
+// size: Dimension of each square
+function getCheckeredFloor(dimen,size){
+
+	var coord_square = size/2
+	
+	//origin at center
+	base_vertices = [
+		 -coord_square,  0.0,   coord_square,
+		 coord_square,  0.0,   coord_square,
+		 -coord_square,  0.0,   -coord_square,
+		 
+		 coord_square,  0.0,  coord_square,
+		 coord_square,  0.0,  -coord_square,
+		 -coord_square,  0.0, -coord_square,	 		 
+	];
+	
+
+	let base_color2= repeat([0.0,0.0,0.0], base_vertices.length / 3);
+	let base_color1= repeat(COLORS.WHITE.slice(0,3), base_vertices.length / 3);
+	
+
+	let vertices = []
+	let colors = []
+	
+	floor_v = -dimen*size / 2;
+
+	for(var i = 0; i < dimen; i++){
+		for(var j = 0; j < dimen; j++){
+
+	 		vertices.push(squareAt(base_vertices,[floor_v+j*size,0,floor_v+i*size]))
+	 		colors.push((j+i)%2 == 0 ? base_color1 : base_color2);
+
+	 	}
+
+	}
+
+	vertices = flatten(vertices)
+	colors = flatten(colors)
+
+	return {
+
+		"vertices": vertices,
+		"colors": colors,
+
+	}	
+}
+
+
+function squareAt(m3, v) {
+ var retm = []
+ for(var i= 0; i < m3.length; i++)
+     retm.push(m3[i] + v[i%3]);
+ 
+ return retm;
+}
+
+function repeat(arr, n){
+  var a = [];
+  for (var i=0;i<n;[i++].push.apply(a,arr));
+  return a;
+}
+
+
+
 

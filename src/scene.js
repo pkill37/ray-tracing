@@ -26,26 +26,26 @@ class Scene {
 
         // Vertex Coordinates
         this.triangleVertexPositionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexPositionBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         this.triangleVertexPositionBuffer.itemSize = 3;
         this.triangleVertexPositionBuffer.numItems = vertices.length / 3;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexPositionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         // Vertex Normals
         this.triangleVertexNormalBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexNormalBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
         this.triangleVertexNormalBuffer.itemSize = 3;
         this.triangleVertexNormalBuffer.numItems = normals.length / 3;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexNormalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
         gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, this.triangleVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         // Colors
         this.triangleVertexColorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexColorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
         this.triangleVertexColorBuffer.itemSize = 3;
         this.triangleVertexColorBuffer.numItems = colors.length / 3;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexColorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
         gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, this.triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
     }
 
@@ -69,11 +69,11 @@ class Scene {
         // The global model transformation is an input
         // Concatenate with the particular model transformations
         // Pay attention to transformation order
-        mvMatrix = mult(mvMatrix, translationMatrix(model.tx, model.ty, model.tz));
-        mvMatrix = mult(mvMatrix, rotationZZMatrix(model.angleZZ));
-        mvMatrix = mult(mvMatrix, rotationYYMatrix(model.angleYY));
-        mvMatrix = mult(mvMatrix, rotationXXMatrix(model.angleXX));
-        mvMatrix = mult(mvMatrix, scalingMatrix(model.sx, model.sy, model.sz));
+        mvMatrix = mult(mvMatrix, translationMatrix(model.translation[0], model.translation[1], model.translation[2]));
+        mvMatrix = mult(mvMatrix, rotationZZMatrix(model.rotation[2]));
+        mvMatrix = mult(mvMatrix, rotationYYMatrix(model.rotation[1]));
+        mvMatrix = mult(mvMatrix, rotationXXMatrix(model.rotation[0]));
+        mvMatrix = mult(mvMatrix, scalingMatrix(model.scale[0], model.scale[1], model.scale[2]));
 
         // Passing the Model View Matrix to apply the current transformation
         var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
@@ -95,7 +95,6 @@ class Scene {
         gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(lightSources[0].getPosition()));
         gl.uniform4fv(gl.getUniformLocation(shaderProgram, "viewerPosition"), flatten([0.0, 0.0, 0.0, 1.0]));
 
-        // primitiveType allows drawing as filled triangles / wireframe / vertices
         if(model.primitive == gl.LINE_LOOP) {
             // To simulate wireframe drawing!
             // No faces are defined! There are no hidden lines!

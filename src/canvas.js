@@ -57,7 +57,7 @@ class Canvas {
             new Line([0, 0, 0], [0, axis, 0], COLORS.GREEN),
             new Line([0, 0, 0], [0, 0, axis], COLORS.BLUE),
 
-            new Floor(checkered_floor['vertices'], checkered_floor['colors'], null, [0, -2, -10])
+            new Floor(checkered_floor['vertices'], checkered_floor['colors'], null, [0, -2, 0])
         ]
 
         for(let model of models) {

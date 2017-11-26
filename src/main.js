@@ -10,6 +10,7 @@ class Application {
         this.mouseDown = false;
 		this.lastMouseX = null;
 		this.lastMouseY = null;
+        this.shiftDown = false;
 		this.setEventListeners();
     }
 
@@ -50,8 +51,8 @@ class Application {
         let checkered_floor = getCheckeredFloor(100, 1)
         let models = [
             new Sphere(sphereVertices, flatten(Array(36864).fill(COLORS.GREEN.slice(0, 3))), null, [1, 1, -5]),
-            new Sphere(sphereVertices, flatten(Array(36864).fill(COLORS.RED.slice(0, 3))), null, [0, 0, 0]),
-            new Frustum(frustumVertices, flatten(Array(6*3).fill(COLORS.BLUE.slice(0,3))), null, [0, 0, 2], [0, Math.PI*2.8, Math.PI*1.5]),
+            new Sphere(sphereVertices, flatten(Array(36864).fill(COLORS.RED.slice(0, 3))), null, [1, 4, 2]),
+            new Frustum(frustumVertices, flatten(Array(6*3).fill(COLORS.BLUE.slice(0,3))), null, [2, 2, 2], [0, Math.PI*2.8, Math.PI*1.5]),
 
             new Line([-1, 0, 1], [1, 0, 1], COLORS.BLACK.slice(0,3), [1, 1, -5]),
 
@@ -78,8 +79,18 @@ class Application {
 		    self.lastMouseY = event.clientY;
 		}
 
-		this.canvas.onscroll = function handleScroll(event){
-			console.log(event)
+		this.canvas.onmousewheel = function handleScroll(event){
+		    var mousex = event.clientX - canvas.offsetLeft;
+		    var mousey = event.clientY - canvas.offsetTop;
+		    var wheel = event.wheelDelta/120;//n or -n
+		    var zoom = 1 + wheel/20;
+		    var zoomIntensity = 0.2;
+		    var zoom = Math.exp(wheel*zoomIntensity);
+
+             
+            self.scene.globalScale = mult(self.scene.globalScale,[ zoom,zoom,zoom ]);
+            
+
 		}
 
 	    document.onmouseup = function handleMouseUp(event) {
@@ -89,18 +100,75 @@ class Application {
 	    document.onmousemove = function handleMouseMove(event) {
 		    if (!self.mouseDown) return;
 
-		    // Rotation angles proportional to cursor displacement
-		    var newX = event.clientX;
-		    var newY = event.clientY;
-		    var deltaX = newX - self.lastMouseX;
-		    var deltaY = newY - self.lastMouseY;
+           
 
-		    self.scene.globalRotation[1] += radians( 20 * deltaX  )
-		    self.scene.globalRotation[0] += radians( 20 * deltaY  )
+    		    // Rotation angles proportional to cursor displacement
+    		    var newX = event.clientX;
+    		    var newY = event.clientY;
+    		    var deltaX = newX - self.lastMouseX;
+    		    var deltaY = newY - self.lastMouseY;
+                if(self.shiftDown){
+                    //self.scene.globalTranslation[2] += 0.05*deltaY
+                    self.scene.globalTranslation[0] += 0.05*deltaX
+                }
+                else{
 
-		    self.lastMouseX = newX;
-		    self.lastMouseY = newY;
+        		    self.scene.globalRotation[0] += 0.5*deltaY
+        		    self.scene.globalRotation[1] += 0.5*deltaX
+                }
+
+                    self.lastMouseX = newX;
+                    self.lastMouseY = newY;
   		}
+
+  		document.addEventListener("keydown", function(event){
+
+					// Getting the pressed key
+
+					// Updating rec. depth and drawing again
+
+					var key = event.keyCode; // ASCII
+                    console.log(key)
+
+                    var delta = 0.5 
+
+					switch(key){
+						case 16 : // shift
+							self.shiftDown = true
+						break;
+                        case 87 : // w
+                            self.scene.globalTranslation = add(self.scene.globalTranslation,[0,0,delta])
+
+                        break;
+						case 65 : // a
+                            self.scene.globalTranslation= add(self.scene.globalTranslation,[delta,0,0])
+                        break;
+                        case 83 : // s
+                            self.scene.globalTranslation = add(self.scene.globalTranslation,[0,0,-delta])
+                        break;
+                        case 68 : // d
+                            self.scene.globalTranslation= add(self.scene.globalTranslation,[-delta,0,0])
+                        break;
+                        case 32 : // space
+                            self.scene.globalTranslation = [0,0,0]
+                            self.scene.globalScale = [0.5,0.5,0.5]
+                        break;
+					}
+				});
+
+        document.addEventListener("keyup", function(event){
+
+                    // Getting the pressed key
+
+                    // Updating rec. depth and drawing again
+
+                    var key = event.keyCode; // ASCII
+                    if(key == 16){
+                        self.shiftDown = false;
+                    }
+                });
+
+
 	}
 
     tick() {

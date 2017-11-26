@@ -34,7 +34,7 @@ function raycast(ray, direction, depth, objects, rays) {
 
         if (i) {
             console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center)
-            rays.push([ray, intersection])
+            rays.push([ray, obj.center])
 
             let incident = add(ray, direction)
             let intersection = null

@@ -9,7 +9,9 @@ class Scene {
         this.triangleVertexPositionBuffer = null
         this.triangleVertexNormalBuffer = null
         this.triangleVertexColorBuffer = null
-        this.globalRotation = [0, 0, 0]
+        this.globalRotation = [0,0,0];
+        this.globalScale = [1,1,1];
+        this.globalTranslation = [0,0,0];
     }
 
     add(model) {
@@ -57,10 +59,32 @@ class Scene {
         // GLOBAL TRANSFORMATION FOR THE WHOLE SCENE
         let mvMatrix = translationMatrix(0, 0, this.globalTz);
 
+        
+
+        // let tmpMatrix = mult(mvMatrix, translationMatrix(0,0,this.globalTranslation[2]))
+        
+        // tmpMatrix = mult(tmpMatrix, rotationXXMatrix(this.globalRotation[0]));
+        // tmpMatrix = mult(tmpMatrix, rotationYYMatrix(this.globalRotation[1]));
+        // tmpMatrix = mult(tmpMatrix, rotationZZMatrix(this.globalRotation[2]));
+        // tmpMatrix = mult(tmpMatrix, translationMatrix(0,0,this.globalTranslation[2]))
+        
+        
+        
+
         // Global rotation
-        mvMatrix = mult(mvMatrix, rotationZZMatrix(this.globalRotation[2]));
-        mvMatrix = mult(mvMatrix, rotationYYMatrix(this.globalRotation[1]));
-        mvMatrix = mult(mvMatrix, rotationXXMatrix(this.globalRotation[0]));
+         mvMatrix = mult(mvMatrix, rotationXXMatrix(this.globalRotation[0]));
+         mvMatrix = mult(mvMatrix, rotationYYMatrix(this.globalRotation[1]));
+         mvMatrix = mult(mvMatrix, rotationZZMatrix(this.globalRotation[2]));
+        
+
+        // mvMatrix = mult(mvMatrix,tmpMatrix);
+
+        mvMatrix = mult(mvMatrix, scalingMatrix(this.globalScale[0], this.globalScale[1], this.globalScale[2]));
+
+
+        mvMatrix = mult(mvMatrix, translationMatrix(this.globalTranslation[0], this.globalTranslation[1],this.globalTranslation[2]));
+        // mvMatrix = mult(mvMatrix, translationMatrix(tmpMatrix[0][2], 0,tmpMatrix[2][2]));
+
 
         for(let model of this.models) {
             this.drawModel(model, mvMatrix)
@@ -88,11 +112,11 @@ class Scene {
         // The global model transformation is an input
         // Concatenate with the particular model transformations
         // Pay attention to transformation order
-        mvMatrix = mult(mvMatrix, translationMatrix(model.translation[0], model.translation[1], model.translation[2]));
-        mvMatrix = mult(mvMatrix, rotationZZMatrix(model.rotation[2]));
-        mvMatrix = mult(mvMatrix, rotationYYMatrix(model.rotation[1]));
-        mvMatrix = mult(mvMatrix, rotationXXMatrix(model.rotation[0]));
-        mvMatrix = mult(mvMatrix, scalingMatrix(model.scale[0], model.scale[1], model.scale[2]));
+         mvMatrix = mult(mvMatrix, translationMatrix(model.translation[0], model.translation[1], model.translation[2]));
+         mvMatrix = mult(mvMatrix, rotationZZMatrix(model.rotation[2]));
+         mvMatrix = mult(mvMatrix, rotationYYMatrix(model.rotation[1]));
+         mvMatrix = mult(mvMatrix, rotationXXMatrix(model.rotation[0]));
+         mvMatrix = mult(mvMatrix, scalingMatrix(model.scale[0], model.scale[1], model.scale[2]));
 
         // Passing the Model View Matrix to apply the current transformation
         var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");

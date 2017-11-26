@@ -128,8 +128,6 @@ class Canvas {
             // Updating rec. depth and drawing again
 
             var key = event.keyCode; // ASCII
-            console.log(key)
-
             var delta = 0.5
 
             switch(key) {

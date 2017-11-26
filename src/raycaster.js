@@ -20,7 +20,7 @@ function intersectSphere(o, d, s, r) {
             return (t0 < 0) ? t1 : t0
         }
     }
-    return -1
+    return Infinity
 }
 
 // Compute reflection r = i - 2(i.n)n
@@ -30,9 +30,10 @@ function reflect(i, n) {
 
 function raycast(ray, direction, depth, objects, rays) {
     for (let obj of objects) {
-        let i = intersectSphere(obj.center, obj.radius, ray, direction)
+        let i = intersectSphere(ray, direction, obj.center, obj.radius)
+        console.log('i', i)
 
-        if (i) {
+        if (i !== Infinity) {
             console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center)
             rays.push([ray, obj.center])
 

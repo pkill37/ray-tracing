@@ -17,7 +17,6 @@ class Canvas {
     initWebGL() {
         try { gl = this.canvas.getContext("webgl2");
             gl.clearColor(...COLORS.BLACK);
-            gl.cullFace(gl.BACK);
             gl.enable(gl.DEPTH_TEST);
         } catch (e) {
             console.log("Could not initialise WebGL", e);

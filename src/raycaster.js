@@ -1,22 +1,26 @@
-function intersectSphere(sphereCenter, sphereRadius, rayStart, rayDirection) {
-    var rayToCenter = subtract(sphereCenter, rayStart)
-    var sideLength = dotProduct(rayToCenter, rayDirection)
+/* Return the distance from O to the intersection of the ray (O, D) with the
+   sphere (S, R), or +inf if there is no intersection.
+   O and S are 3D points, D (direction) is a normalized vector, R is a scalar. */
 
-    var rayToCenterLength = dotProduct(rayToCenter, rayToCenter)
-    var discriminant = (sphereRadius * sphereRadius) - rayToCenterLength + (sideLength * sideLength)
-    /*
-    console.log('ray to center', rayToCenter)
-    console.log('distance to sphere', sideLength)
-    console.log('discriminant', discriminant)
-    */
+function intersectSphere(o, d, s, r) {
+    let a = dotProduct(d, d)
+    let os = subtract(o, s)
+    let b = 2 * dotProduct(d, os)
+    let c = dotProduct(os, os) - r*r
+    let disc = b*b - 4*a*c
+    if (disc > 0) {
+        let distSqrt = Math.sqrt(disc)
+        let q = (b < 0) ? (-b - distSqrt) / 2.0 : (-b + distSqrt) / 2.0
 
-    if (discriminant < 0) {
-        return false
-        //return -1;
-    } else {
-        return true
-        //return sideLength - Math.sqrt(discriminant);
+        let t0 = q / a
+        let t1 = c / q
+        t0 = Math.min(t0, t1)
+        t1 = Math.max(t0, t1)
+        if (t1 >= 0) {
+            return (t0 < 0) ? t1 : t0
+        }
     }
+    return -1
 }
 
 // Compute reflection r = i - 2(i.n)n
@@ -30,7 +34,7 @@ function raycast(ray, direction, depth, objects, rays) {
 
         if (i) {
             console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center)
-            rays.push([ray, obj.center])
+            rays.push([ray, intersection])
 
             let incident = add(ray, direction)
             let intersection = null

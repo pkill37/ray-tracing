@@ -1,7 +1,9 @@
 class Scene {
     constructor() {
+        this.camera = [0, 0, 0]
         this.models = []
         this.lights = []
+        this.rays = []
         this.pMatrix = perspective(100, 1, 0.05, 50)
         this.globalTz = -4.5
         this.triangleVertexPositionBuffer = null
@@ -19,8 +21,6 @@ class Scene {
     }
 
     initBuffers(vertices, normals, colors) {
-        // TODO: reorder triangle lines
-
         // Vertex Coordinates
         this.triangleVertexPositionBuffer = gl.createBuffer();
         this.triangleVertexPositionBuffer.itemSize = 3;
@@ -62,11 +62,26 @@ class Scene {
         mvMatrix = mult(mvMatrix, rotationYYMatrix(this.globalRotation[1]));
         mvMatrix = mult(mvMatrix, rotationXXMatrix(this.globalRotation[0]));
 
-        //console.log(this.globalRotation)
-
         for(let model of this.models) {
             this.drawModel(model, mvMatrix)
         }
+
+        // TODO: refactor this into drawRay
+        for(let ray of this.rays) {
+            this.drawModel(ray, mvMatrix)
+        }
+    }
+
+    drawRay(direction, depth) {
+        // TODO: Clear currently drawn rays
+        this.rays = []
+
+        // Compute reflected rays
+        raycast(this.camera, direction, depth, this.models.filter(m => m instanceof Sphere), this.rays)
+
+        this.rays = this.rays.map(r => new Line(r[0], r[1], COLORS.YELLOW))
+
+        console.log('Traced rays', this.rays)
     }
 
     drawModel(model, mvMatrix) {

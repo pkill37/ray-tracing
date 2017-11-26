@@ -18,7 +18,7 @@ function getCheckeredFloor(dimen,size){
 	];
 
 	let base_color2= repeat(COLORS.BLACK.slice(0,3), base_vertices.length / 3);
-	let base_color1 = repeat(COLORS.WHITE.slice(0,3), base_vertices.length / 3)
+	let base_color1 = repeat(COLORS.GREY.slice(0,3), base_vertices.length / 3)
 
 	let vertices = []
 	let colors = []

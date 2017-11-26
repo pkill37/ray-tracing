@@ -675,3 +675,13 @@ function multiplyVectorByMatrix( m, p )
 	
 	return result;
 }
+
+function multiplyVectorByScalar(v, s)
+{
+    var result = vec3();
+    for (var i = 0; i < v.length; i++) {
+        result[i] = v[i]*s;
+    }
+    return result;
+}
+

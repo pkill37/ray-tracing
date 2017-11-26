@@ -15,7 +15,7 @@ class Canvas {
 
     initWebGL() {
         try { gl = this.canvas.getContext("webgl2");
-            gl.clearColor(...COLORS.SKY_BLUE);
+            gl.clearColor(...COLORS.BLACK);
             gl.cullFace(gl.BACK);
             gl.enable(gl.DEPTH_TEST);
         } catch (e) {
@@ -47,10 +47,10 @@ class Canvas {
 
     start() {
         let checkered_floor = getCheckeredFloor(100, 1)
-        let axis = 1000
+        let axis = 1e10
         let models = [
-            new Sphere(COLORS.GREEN, null, [1, 1, -5]),
-            new Sphere(COLORS.RED, null, [0, 0, 0]),
+            new Sphere([1, 1, -5], 1, COLORS.RED),
+            new Sphere([0, 0, 0], 2, COLORS.GREEN),
 
             new Line([0, 0, 0], [axis, 0, 0], COLORS.RED),
             new Line([0, 0, 0], [0, axis, 0], COLORS.GREEN),
@@ -70,6 +70,12 @@ class Canvas {
         for(let light of lights) {
             this.scene.addLight(light)
         }
+
+        this.scene.camera = [2, 2, 2]
+
+        // TODO: move this into the scene draw eventually
+        let direction = symmetric(this.scene.camera)
+        this.scene.drawRay(direction, 3)
 
         this.tick()
     }

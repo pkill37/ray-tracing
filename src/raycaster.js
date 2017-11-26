@@ -1,21 +1,22 @@
-function intersectSphere(sphereCenter, rayStart, rayDirection) {
-    let rayToSphere = subtract(sphereCenter, rayStart)
-    let b = dotProduct(rayDirection, rayToSphere)
-    let d = b*b - dotProduct(rayToSphere, rayToSphere) + 1.0
-    
-    let distance = null
-    if (d < 0.0) {
-        distance = 10000.0
-        return false
-    }
+function intersectSphere(sphereCenter, sphereRadius, rayStart, rayDirection) {
+    var rayToCenter = subtract(sphereCenter, rayStart)
+    var sideLength = dotProduct(rayToCenter, rayDirection)
 
-    distance = b - Math.sqrt(d)
-    if (distance < 0.0) {
-        distance = 10000.0
-        return false
-    }
+    var rayToCenterLength = dotProduct(rayToCenter, rayToCenter)
+    var discriminant = (sphereRadius * sphereRadius) - rayToCenterLength + (sideLength * sideLength)
+    /*
+    console.log('ray to center', rayToCenter)
+    console.log('distance to sphere', sideLength)
+    console.log('discriminant', discriminant)
+    */
 
-    return true
+    if (discriminant < 0) {
+        return false
+        //return -1;
+    } else {
+        return true
+        //return sideLength - Math.sqrt(discriminant);
+    }
 }
 
 // Compute reflection r = i - 2(i.n)n
@@ -25,9 +26,11 @@ function reflect(i, n) {
 
 function raycast(ray, direction, depth, objects, rays) {
     for (let obj of objects) {
-        if (intersectSphere(obj.center, ray, direction)) {
-            console.log('Ray', ray, 'with direction', direction, 'intersected sphere centered at', obj.center)
-            rays.push([ray, add(ray, direction)])
+        let i = intersectSphere(obj.center, obj.radius, ray, direction)
+
+        if (i) {
+            console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center)
+            rays.push([ray, obj.center])
 
             let incident = add(ray, direction)
             let intersection = null

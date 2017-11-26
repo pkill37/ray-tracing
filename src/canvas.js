@@ -71,7 +71,7 @@ class Canvas {
             this.scene.addLight(light)
         }
 
-        this.scene.camera = [2, 2, 2]
+        this.scene.camera = [5, 5, 5]
 
         // TODO: move this into the scene draw eventually
         let direction = symmetric(this.scene.camera)

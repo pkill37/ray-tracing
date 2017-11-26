@@ -17,9 +17,10 @@ class App {
         let x = parseFloat(document.getElementById('sphere-x').value)
         let y = parseFloat(document.getElementById('sphere-y').value)
         let z = parseFloat(document.getElementById('sphere-z').value)
+        let r = parseFloat(document.getElementById('sphere-r').value)
         let color = document.getElementById('sphere-color').value
-        console.log('Add sphere', x, y, z, color)
-        
+        console.log('Add sphere', x, y, z, r, color)
+
         switch(color) {
             case 'yellow':
                 color = COLORS.YELLOW
@@ -37,7 +38,7 @@ class App {
                 color = COLORS.BLACK
         }
 
-        this.canvas.scene.add(new Sphere(color, null, [x, y, z]))
+        this.canvas.scene.add(new Sphere([x, y, z], r, color))
     }
 
     handleAddCamera() {

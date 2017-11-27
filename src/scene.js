@@ -3,6 +3,7 @@ class Scene {
         this.camera = [5, 5, 5]
         this.models = []
         this.lights = []
+        this.lightPosition = null
         this.primaryRays = []
         this.shadowRays = []
         this.pMatrix = perspective(100, 1, 0.05, 50)
@@ -89,6 +90,8 @@ class Scene {
         mvMatrix = mult(mvMatrix, translationMatrix(this.globalTranslation[0], this.globalTranslation[1],this.globalTranslation[2]));
         // mvMatrix = mult(mvMatrix, translationMatrix(tmpMatrix[0][2], 0,tmpMatrix[2][2]));
 
+        // Adjust light position according to world view
+        this.lightPosition = multiplyPointByMatrix(mvMatrix, this.lights[0].position)
 
         for(let model of this.models) {
             this.drawModel(model, mvMatrix)
@@ -103,25 +106,15 @@ class Scene {
         }
     }
 
-    castRay(direction, depth) {
-        this.primaryRays = []
-        this.shadowRays = []
-
-        this.lastRayWasCast = raycast(this.camera, direction, depth, this.models.filter(m => m instanceof Sphere), this.primaryRays, this.shadowRays)
-
-        this.primaryRays = this.primaryRays.map(r => new Line(r[0], r[1], COLORS.YELLOW))
-        this.shadowRays = this.shadowRays.map(r => new Line(r[0], r[1], COLORS.BLACK))
-    }
-
     drawModel(model, mvMatrix) {
         // The global model transformation is an input
         // Concatenate with the particular model transformations
         // Pay attention to transformation order
-         mvMatrix = mult(mvMatrix, translationMatrix(model.translation[0], model.translation[1], model.translation[2]));
-         mvMatrix = mult(mvMatrix, rotationZZMatrix(model.rotation[2]));
-         mvMatrix = mult(mvMatrix, rotationYYMatrix(model.rotation[1]));
-         mvMatrix = mult(mvMatrix, rotationXXMatrix(model.rotation[0]));
-         mvMatrix = mult(mvMatrix, scalingMatrix(model.scale[0], model.scale[1], model.scale[2]));
+        mvMatrix = mult(mvMatrix, translationMatrix(model.translation[0], model.translation[1], model.translation[2]));
+        mvMatrix = mult(mvMatrix, rotationZZMatrix(model.rotation[2]));
+        mvMatrix = mult(mvMatrix, rotationYYMatrix(model.rotation[1]));
+        mvMatrix = mult(mvMatrix, rotationXXMatrix(model.rotation[0]));
+        mvMatrix = mult(mvMatrix, scalingMatrix(model.scale[0], model.scale[1], model.scale[2]));
 
         // Passing the Model View Matrix to apply the current transformation
         var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
@@ -140,7 +133,7 @@ class Scene {
         gl.uniform3fv(gl.getUniformLocation(shaderProgram, "diffuseProduct"), flatten(diffuseProduct));
         gl.uniform3fv(gl.getUniformLocation(shaderProgram, "specularProduct"), flatten(specularProduct));
         gl.uniform1f(gl.getUniformLocation(shaderProgram, "shininess"), nPhong);
-        gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(this.lights[0].position));
+        gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(this.lightPosition));
         gl.uniform4fv(gl.getUniformLocation(shaderProgram, "viewerPosition"), flatten([0.0, 0.0, 0.0, 1.0]));
 
         if(model.primitive == gl.LINE_LOOP) {
@@ -154,5 +147,16 @@ class Scene {
             gl.drawArrays(model.primitive, 0, this.triangleVertexPositionBuffer.numItems);
         }
     }
+
+    castRay(direction, depth) {
+        this.primaryRays = []
+        this.shadowRays = []
+
+        this.lastRayWasCast = raycast(this.camera, direction, depth, this.models.filter(m => m instanceof Sphere), this.primaryRays, this.shadowRays)
+
+        this.primaryRays = this.primaryRays.map(r => new Line(r[0], r[1], COLORS.YELLOW))
+        this.shadowRays = this.shadowRays.map(r => new Line(r[0], r[1], COLORS.BLACK))
+    }
+
 }
 

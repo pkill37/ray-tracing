@@ -1,6 +1,6 @@
 class Scene {
     constructor() {
-        this.camera = [5, 5, 5]
+        this.camera = [20, 5, 20]
         this.models = []
         this.lights = []
         this.primaryRays = []

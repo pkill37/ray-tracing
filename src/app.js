@@ -8,7 +8,7 @@ class App {
         this.canvas = new Canvas()
         this.rayTraceDepth = 0
         this.pixel = [-5, -5, -3.5]
-        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [5, 5, 5], [45, 45, 0]))
+        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, this.canvas.scene.camera, [45, 45, 0]))
  
     }
 

@@ -1,5 +1,19 @@
 function intersect(rayStart, rayDirection, object) {
     if (object instanceof Sphere) return intersectSphere(rayStart, rayDirection, object.center, object.radius)
+    else if (object instanceof Floor) return intersectPlane(rayStart, rayDirection, object.point, object.normal)
+}
+
+function intersectPlane(o, d, p, n) {
+    let denom = dotProduct(d, n)
+    if (Math.abs(denom) < 1e-6) {
+        return Infinity
+    }
+
+    let dist = dotProduct(subtract(P, O), N) / denom
+    if (dist < 0) {
+        return Infinity
+    }
+    return dist
 }
 
 function intersectSphere(o, d, s, r) {
@@ -39,7 +53,7 @@ function raycast(ray, direction, depth, objects, primaryRays, shadowRays, lastRa
     let foundIntersectionFlag = false;
 
     for (let obj of objects) {
-        let t = intersectSphere(ray, direction, obj.center, obj.radius)
+        let t = intersect(ray, direction, obj)
         
         if (t !== Infinity) {
             foundIntersectionFlag = true;

@@ -48,29 +48,28 @@ function raycast(ray, direction, depth, objects, primaryRays, shadowRays, lastRa
     let foundIntersectionFlag = false;
 
     let closestObj = Array(2)
-
+    
     for (let obj of objects) {
         let t = intersect(ray, direction, obj)
 
+        if (t !== Infinity && t!== undefined && t > 1e-5 ) {
 
-        
-        if (t !== Infinity && t != undefined) {
-            console.log("t",t)
             if(foundIntersectionFlag){
                 if(t < closestObj[1])
                     closestObj = [obj,t]
             } 
             else
                 closestObj = [obj,t] 
+
             foundIntersectionFlag = true;
         }
     }
 
     if(foundIntersectionFlag){
 
+
         let obj = closestObj[0];
         let t = closestObj[1];
-
         console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center + ' distanced ' + t)
         
         let incident = multiplyVectorByScalar(direction, t)
@@ -95,14 +94,14 @@ function raycast(ray, direction, depth, objects, primaryRays, shadowRays, lastRa
 
         return raycast(intersection, reflection, depth-1, objects, primaryRays, shadowRays, lastRay)
     } else{
-        if( lastRay !== null){
+        if(lastRay !== null){
+
             primaryRays.push(lastRay)
-            return true
         }
         else{
             primaryRays.push([ray, add(ray,multiplyVectorByScalar(direction,10))])
-            return true
         }
+            return true
     }
 }
 

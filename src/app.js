@@ -63,10 +63,13 @@ class App {
         let y = parseFloat(document.getElementById('camera-y').value)
         let z = parseFloat(document.getElementById('camera-z').value)
         console.log('Set camera', x, y, z)
-        
+
         var cameraRotation = [45, 45, 0]
         this.canvas.scene.camera = new Camera([x, y, z], cameraRotation, [1, 1, 1]);
+        console.log('set camera', this.canvas.scene.camera)
         this.canvas.scene.primaryRays = []
+        this.rayTraceDepth = 0;
+        this.canvas.scene.lastRayWasCast = false
     }
 
     handleSetLight() {
@@ -87,6 +90,9 @@ class App {
             case 'green':
                 color = COLORS.GREEN
                 break
+            case 'white':
+                color = COLORS.WHITE
+                break
             default:
                 color = COLORS.BLACK
         }
@@ -102,12 +108,12 @@ class App {
 
     handleNextRayTrace() {
         if (!this.canvas.scene.lastRayWasCast) this.rayTraceDepth++
-        this.canvas.scene.castRay(normalizeRet(this.canvas.scene.camera.cameraCenter), this.rayTraceDepth)
+        this.canvas.scene.castRay(normalizeRet(this.canvas.scene.camera.nearVector), this.rayTraceDepth)
     }
 
     handlePreviousRayTrace() {
         if (this.rayTraceDepth > 0) this.rayTraceDepth--
-        this.canvas.scene.castRay(normalizeRet(this.canvas.scene.camera.cameraCenter), this.rayTraceDepth)
+        this.canvas.scene.castRay(normalizeRet(this.canvas.scene.camera.nearVector), this.rayTraceDepth)
     }
 
     start() {

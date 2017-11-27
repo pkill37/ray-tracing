@@ -5,6 +5,8 @@
         <title>Ray Tracing</title>
         <link rel="stylesheet" href="styles/shoelace.css">
         <link rel="stylesheet" href="styles/main.css">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
 
         <script src="illumination.js"></script>
         <script src="colors.js"></script>
@@ -30,6 +32,8 @@
         <script src="scene.js"></script>
         <script src="canvas.js"></script>
         <script src="app.js"></script>
+        <script src="camera.js"></script>
+
     </head>
 
     <body onload="ready()">
@@ -57,9 +61,9 @@
 
                         <div>
                             <p>Camera</p>
-                            X: <input id="camera-x" class="inline input-coordinate" type="number">
-                            Y: <input id="camera-y" class="input-coordinate" type="number">
-                            Z: <input id="camera-z" class="input-coordinate" type="number">
+                            X: <input id="camera-x" class="inline input-coordinate" type="number" value="5">
+                            Y: <input id="camera-y" class="input-coordinate" type="number" value="5">
+                            Z: <input id="camera-z" class="input-coordinate" type="number" value="5">
                             
                             <button id="camera-add" type="button">Set Camera</button>
                         </div>
@@ -86,7 +90,33 @@
                 </div>
 
                 <div class="col-8 pad-0">
+
                     <canvas id="canvas"></canvas>
+                    <menu id="controls">
+                        <div class="container-fluid">            
+                          <div class="row">          
+                            <div class="btn-group">
+                              <button type="button" class="btn btn-default col-md-4"></button>
+                              <button type="button" class="btn btn-default col-md-4"></button>
+                              <button type="button" class="btn btn-default col-md-4"></button>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class=" btn-group">
+                              <button type="button" class="btn btn-default col-md-4"></button>
+                              <button type="button" class="btn btn-default col-md-4"></button>
+                              <button type="button" class="btn btn-default col-md-4"></button>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class=" btn-group">
+                              <button type="button" class="btn btn-default col-md-4"></button>
+                              <button type="button" class="btn btn-default col-md-4"></button>
+                              <button type="button" class="btn btn-default col-md-4"></button>
+                            </div>
+                          </div>
+                        </div>
+                    </menu>
                 </div>
             </div>
         </div>

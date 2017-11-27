@@ -1,15 +1,17 @@
 class Scene {
     constructor() {
-        this.camera = [20, 5, 20]
+        this.camera = null
         this.models = []
         this.lights = []
         this.primaryRays = []
         this.shadowRays = []
+
         this.pMatrix = perspective(100, 1, 0.05, 50)
         this.globalTz = -4.5
         this.triangleVertexPositionBuffer = null
         this.triangleVertexNormalBuffer = null
         this.triangleVertexColorBuffer = null
+
         //initial global values
         this.globalRotation = [45,-45,0];
         this.globalScale = [0.3,0.3,0.3];
@@ -95,6 +97,10 @@ class Scene {
             this.drawModel(model, mvMatrix)
         }
 
+        if(this.camera !== null && this.camera.frustum !== null){
+              this.drawModel(this.camera.frustum, mvMatrix)
+        }
+
         for(let p of this.primaryRays) {
             this.drawModel(p, mvMatrix)
         }
@@ -154,11 +160,10 @@ class Scene {
         this.primaryRays = []
         this.shadowRays = []
 
-        this.lastRayWasCast = raycast(this.camera, direction, depth, this.models.filter(m => m instanceof Sphere), this.primaryRays, this.shadowRays)
+        this.lastRayWasCast = raycast(this.camera.origin, direction, depth, this.models.filter(m => m instanceof Sphere), this.primaryRays, this.shadowRays)
 
         this.primaryRays = this.primaryRays.map(r => new Line(r[0], r[1], COLORS.YELLOW))
         this.shadowRays = this.shadowRays.map(r => new Line(r[0], r[1], COLORS.BLACK))
     }
-
 }
 

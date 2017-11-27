@@ -47,6 +47,7 @@
                             <p>Let's explore ray tracing by building a scene and following the rays that are cast.</p>
                         </div>
                         <h1>Spheres</h1>
+                        <p>Add a couple of spheres to the scene</p>
                         <div class="input-group">
                             <input id="sphere-x" class="input-coordinate" type="number" placeholder="X">
                             <input id="sphere-y" class="input-coordinate" type="number" placeholder="Y">
@@ -62,7 +63,7 @@
                         </div>
 
                         <h1>Light</h1>
-                        <p>Set the lights to your preference</p>
+                        <p>Set the light to your preference</p>
                         <div class="input-group">
                             <input id="light-x" class="input-coordinate" type="number" placeholder="X">
                             <input id="light-y" class="input-coordinate" type="number" placeholder="Y">
@@ -79,7 +80,7 @@
                         </div>
 
                         <h1>Camera</h1>
-                        <p>Set the camera for what you wish to visualize</p>
+                        <p>Set the position of the camera eye</p>
                         <div class="input-group">
                             <input id="camera-x" class="input-coordinate" type="number" placeholder="X">
                             <input id="camera-y" class="input-coordinate" type="number" placeholder="Y">
@@ -87,7 +88,7 @@
                             <button id="camera-set" type="button">Set</button>
                         </div>
 
-                        <p>The matrix below represents the viewing plane of the camera. Click one of the buttons to trace a ray through the corresponding position of the camera's viewing plane.</p>
+                        <p>Choose through which pixel (of a subset) of the viewing plane you want to trace the ray</p>
 
                         <div class="raytrace-grid">
                             <div style="input-group">
@@ -109,7 +110,7 @@
                         </div>
 
                         <h1>Trace Ray</h1>
-                        <p>Trace the rays back and forth to understand how ray tracing works</p>
+                        <p>Trace the rays back and forth as they bounce off spheres and the floor plane</p>
                         <button id="raytrace-next" type="button">Next Ray</button>
                         <button id="raytrace-previous" type="button">Previous Ray</button>
                     </main>

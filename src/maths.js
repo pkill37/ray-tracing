@@ -701,3 +701,85 @@ function multiplyVectorByScalar(v, s)
     return result;
 }
 
+
+
+function inverse(_A) {
+    var temp,
+    N = _A.length,
+    E = [];
+
+    for (var i = 0; i < N; i++)
+      E[i] = [];
+
+    for (i = 0; i < N; i++)
+      for (var j = 0; j < N; j++) {
+        E[i][j] = 0;
+        if (i == j)
+          E[i][j] = 1;
+      }
+
+    for (var k = 0; k < N; k++) {
+      temp = _A[k][k];
+
+      for (var j = 0; j < N; j++)
+      {
+        _A[k][j] /= temp;
+        E[k][j] /= temp;
+      }
+
+      for (var i = k + 1; i < N; i++)
+      {
+        temp = _A[i][k];
+
+        for (var j = 0; j < N; j++)
+        {
+          _A[i][j] -= _A[k][j] * temp;
+          E[i][j] -= E[k][j] * temp;
+        }
+      }
+    }
+
+    for (var k = N - 1; k > 0; k--)
+    {
+      for (var i = k - 1; i >= 0; i--)
+      {
+        temp = _A[i][k];
+
+        for (var j = 0; j < N; j++)
+        {
+          _A[i][j] -= _A[k][j] * temp;
+          E[i][j] -= E[k][j] * temp;
+        }
+      }
+    }
+
+    for (var i = 0; i < N; i++)
+      for (var j = 0; j < N; j++)
+        _A[i][j] = E[i][j];
+    return _A;
+  }
+
+function unproject(winx, winy, winz, pMatrix, mvMatrix) {
+    // winz is either 0 (near plane), 1 (far plane) or somewhere in between.
+    // if it's not given a value we'll produce coords for both.
+    var viewport = [0, 0, pMatrix[0].length, pMatrix.length]
+
+    //Calculation for inverting a matrix, compute projection x modelview; then compute the inverse
+    var m = inverse(mvMatrix)
+    m = mult(m, pMatrix)
+    m = inverse(m)
+
+    // Transformation of normalized coordinates between -1 and 1
+    var inf = vec4()
+    inf[0] = (winx-viewport[0])/viewport[2]*2.0-1.0
+    inf[1] = (winy-viewport[1])/viewport[3]*2.0-1.0
+    inf[2] = 2.0*winz-1.0
+    inf[3] = 1.0
+
+    //Objects coordinates
+    var out = multiplyPointByMatrix(m, inf);
+    if(out[3] == 0.0) return null;
+
+    out[3] = 1.0/out[3];
+    return [out[0]*out[3], out[1]*out[3], out[2]*out[3]];
+}

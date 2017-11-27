@@ -89,6 +89,8 @@ class Scene {
         mvMatrix = mult(mvMatrix, translationMatrix(this.globalTranslation[0], this.globalTranslation[1],this.globalTranslation[2]));
         // mvMatrix = mult(mvMatrix, translationMatrix(tmpMatrix[0][2], 0,tmpMatrix[2][2]));
 
+        this.mvMatrix = mvMatrix
+
         for(let model of this.models) {
             this.drawModel(model, mvMatrix)
         }

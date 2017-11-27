@@ -8,7 +8,6 @@ class Model {
         this.translation = translation
         this.rotation = rotation
         this.scale = scale
-        console.log(this)
     }
 }
 

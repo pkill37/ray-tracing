@@ -68,7 +68,7 @@ class Canvas {
         }
 
         let lights = [
-            new LightSource([5,10,5,1], [1,1,0], [0.5, 0.5, 0.5])
+            new LightSource([5,10,5,1], [1,1,1], [0.5, 0.5, 0.5])
         ]
 
         for(let light of lights) {
@@ -85,6 +85,25 @@ class Canvas {
 		    self.mouseDown = true;
 		    self.lastMouseX = event.clientX;
 		    self.lastMouseY = event.clientY;
+
+            let clippedMouseX = event.clientX / (this.width*0.5) - 2
+            let clippedMouseY = event.clientY / (this.height*0.5) - 1
+
+            /*
+            console.log('\n\nTesting...')
+            console.log('Mouse', clippedMouseX, clippedMouseY)
+
+            let unprojection = unproject(clippedMouseX, clippedMouseY, 0, self.scene.pMatrix, self.scene.mvMatrix)
+            console.log(unprojection)
+
+            self.scene.add(new Line(self.scene.camera, multiplyVectorByScalar(add(self.scene.camera, unprojection), 20), COLORS.RED))
+
+            for (let model of self.scene.models) {
+                if (intersect(self.scene.camera, unprojection, model)) {
+                    console.log('intersected', model)
+                }
+            }
+            */
 		}
 
 		this.canvas.onmousewheel = function handleScroll(event){

@@ -75,7 +75,7 @@ class Canvas {
 
         // TODO: move this into the scene draw eventually
         let direction = symmetric(this.scene.camera)
-        this.scene.drawRay(direction, 3)
+        this.scene.drawRay(normalizeRet([-5,-5,-3.5]), 3)
 
         this.tick()
     }
@@ -113,8 +113,8 @@ class Canvas {
             var deltaX = newX - self.lastMouseX;
             var deltaY = newY - self.lastMouseY;
             if(self.shiftDown){
-                //self.scene.globalTranslation[2] += 0.05*deltaY
-                self.scene.globalTranslation[0] += 0.05*deltaX
+                self.scene.dragTranslation[1] -= 0.05*deltaY
+                self.scene.dragTranslation[0] += 0.05*deltaX
             } else {
                 self.scene.globalRotation[0] += 0.5*deltaY
                 self.scene.globalRotation[1] += 0.5*deltaX
@@ -128,6 +128,7 @@ class Canvas {
             // Updating rec. depth and drawing again
 
             var key = event.keyCode; // ASCII
+
             var delta = 0.5
 
             switch(key) {
@@ -148,6 +149,7 @@ class Canvas {
                     break;
                 case 32: // space
                     self.scene.globalTranslation = [0,0,0]
+                    self.scene.dragTranslation = [0,0,0]
                     self.scene.globalScale = [0.5,0.5,0.5]
                     break;
             }

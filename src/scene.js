@@ -12,6 +12,7 @@ class Scene {
         this.globalRotation = [0,0,0];
         this.globalScale = [1,1,1];
         this.globalTranslation = [0,0,0];
+        this.dragTranslation = [0,0,0];
     }
 
     add(model) {
@@ -59,7 +60,8 @@ class Scene {
         // GLOBAL TRANSFORMATION FOR THE WHOLE SCENE
         let mvMatrix = translationMatrix(0, 0, this.globalTz);
 
-        
+        mvMatrix = mult(mvMatrix, translationMatrix(this.dragTranslation[0], this.dragTranslation[1],this.dragTranslation[2]));
+
 
         // let tmpMatrix = mult(mvMatrix, translationMatrix(0,0,this.globalTranslation[2]))
         

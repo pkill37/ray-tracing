@@ -562,6 +562,22 @@ function normalize( v )
     v[2] /= norm;
 }
 
+function normalizeRet( v )
+{
+    var squaresSum = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+    
+    var norm = Math.sqrt( squaresSum );
+    ret = [0,0,0]
+
+    ret[0] = v[0] / norm;
+    
+    ret[1] = v[1] / norm;
+    
+    ret[2] = v[2] / norm;
+
+    return ret;
+
+}
 //----------------------------------------------------------------------------
 
 // NEW --- Symmetric vector

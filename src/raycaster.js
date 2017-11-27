@@ -5,7 +5,7 @@
 function intersectSphere(o, d, s, r) {
     let a = dotProduct(d, d)
     let os = subtract(o, s)
-    let b = 2 * dotProduct(d, os)
+    let b = 2   * dotProduct(d, os)
     let c = dotProduct(os, os) - r*r
     let disc = b*b - 4*a*c
     if (disc > 0) {
@@ -25,23 +25,59 @@ function intersectSphere(o, d, s, r) {
 
 // Compute reflection r = i - 2(i.n)n
 function reflect(i, n) {
-    return subtract(i, multiplyVectorByScalar(2*dotProduct(i, n), n))
+    return subtract(i, multiplyVectorByScalar(n, 2*dotProduct(i, n)) )
 }
 
 function raycast(ray, direction, depth, objects, rays) {
     for (let obj of objects) {
+
         let i = intersectSphere(ray, direction, obj.center, obj.radius)
         console.log('i', i)
+        console.log(obj.center)
+        console.log(obj.radius)
+        //rays.push([ray, direction])
 
+        
         if (i !== Infinity) {
             console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center)
-            rays.push([ray, obj.center])
 
-            let incident = add(ray, direction)
-            let intersection = null
-            //let normal = subtract(intersection, obj.center)
-            //let reflection = reflect(incident, normal)
-            //return raycast(intersection, reflection, depth-1, objects, rays)
+            
+            
+            
+            let incident = multiplyVectorByScalar(direction,i)
+
+            console.log("incident")
+            console.log(incident)
+            
+            let intersection = add(ray, incident)
+            console.log("intersection")
+            console.log(intersection)
+
+            
+            rays.push([ray, intersection])
+
+
+
+
+            let normal = normalizeRet(subtract( obj.center,intersection))
+            console.log("normal")
+            console.log(normal)
+            
+            
+            let reflection = reflect(incident, normal)
+            console.log("reflection")
+            console.log(reflection)
+            
+            rays.push([intersection, multiplyVectorByScalar(normal,10)])
+            
+            let away = add(intersection,reflection)
+            console.log("away")
+            console.log(away)
+
+            rays.push([intersection, away])
+
+
+            return raycast(intersection, normal, depth-1, objects, rays)
         }
     }
 }

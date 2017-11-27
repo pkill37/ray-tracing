@@ -3,7 +3,6 @@ class Scene {
         this.camera = [5, 5, 5]
         this.models = []
         this.lights = []
-        this.lightPosition = null
         this.primaryRays = []
         this.shadowRays = []
         this.pMatrix = perspective(100, 1, 0.05, 50)
@@ -90,9 +89,6 @@ class Scene {
         mvMatrix = mult(mvMatrix, translationMatrix(this.globalTranslation[0], this.globalTranslation[1],this.globalTranslation[2]));
         // mvMatrix = mult(mvMatrix, translationMatrix(tmpMatrix[0][2], 0,tmpMatrix[2][2]));
 
-        // Adjust light position according to world view
-        this.lightPosition = multiplyPointByMatrix(mvMatrix, this.lights[0].position)
-
         for(let model of this.models) {
             this.drawModel(model, mvMatrix)
         }
@@ -133,7 +129,7 @@ class Scene {
         gl.uniform3fv(gl.getUniformLocation(shaderProgram, "diffuseProduct"), flatten(diffuseProduct));
         gl.uniform3fv(gl.getUniformLocation(shaderProgram, "specularProduct"), flatten(specularProduct));
         gl.uniform1f(gl.getUniformLocation(shaderProgram, "shininess"), nPhong);
-        gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(this.lightPosition));
+        gl.uniform4fv(gl.getUniformLocation(shaderProgram, "lightPosition"), flatten(this.lights[0].position));
         gl.uniform4fv(gl.getUniformLocation(shaderProgram, "viewerPosition"), flatten([0.0, 0.0, 0.0, 1.0]));
 
         if(model.primitive == gl.LINE_LOOP) {

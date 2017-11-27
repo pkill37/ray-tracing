@@ -26,15 +26,16 @@ const vertexShaderSource = `
         // Phong Illumination Model
         // pos is vertex position after applying the global transformation
         vec3 pos = (uMVMatrix * vec4(vPosition, 1.0)).xyz;
+        vec4 lightPos = uMVMatrix * lightPosition;
 
         // vector from vertex position to light source
         vec3 L;
 
         // check for directional light
-        if(lightPosition.w == 0.0)
-            L = normalize( lightPosition.xyz );
+        if(lightPos.w == 0.0)
+            L = normalize( lightPos.xyz );
         else
-            L = normalize( lightPosition.xyz - pos );
+            L = normalize( lightPos.xyz - pos );
 
         // Vector from the vertex position to the eye
         vec3 E;

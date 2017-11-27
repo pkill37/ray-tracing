@@ -1,6 +1,6 @@
-/* Return the distance from O to the intersection of the ray (O, D) with the
-   sphere (S, R), or +inf if there is no intersection.
-   O and S are 3D points, D (direction) is a normalized vector, R is a scalar. */
+function intersect(rayStart, rayDirection, object) {
+    if (object instanceof Sphere) return intersectSphere(rayStart, rayDirection, object.center, object.radius)
+}
 
 function intersectSphere(o, d, s, r) {
     let a = dotProduct(d, d)

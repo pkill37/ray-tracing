@@ -5,8 +5,6 @@
         <title>Ray Tracing</title>
         <link rel="stylesheet" href="styles/shoelace.css">
         <link rel="stylesheet" href="styles/main.css">
-        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
-
 
         <script src="illumination.js"></script>
         <script src="colors.js"></script>
@@ -41,82 +39,81 @@
             <div class="row mar-0">
                 <div class="col-4 pad-0">
                     <main id="main">
-                        <h1>Configuration</h1>
-
+                        <h1>Ray Tracing</h1>
                         <div>
-                            <p>Sphere</p>
-                            X: <input id="sphere-x" class="inline input-coordinate" type="number">
-                            Y: <input id="sphere-y" class="input-coordinate" type="number">
-                            Z: <input id="sphere-z" class="input-coordinate" type="number">
-                            Radius: <input id="sphere-r" class="input-coordinate" type="number">
-                            <select id="sphere-color" class="custom-select">
+                            <p>Ray tracing works by tracing a path from an imaginary eye through each pixel in a virtual screen, and calculating the color of the object visible through it.</p>
+
+                            <p>Each ray must be tested for intersection with the objects in the scene. Once the nearest object has been identified, the algorithm will estimate the incoming light at the point of intersection, examine the material properties of the object, and combine this information to calculate the final color of the pixel.</p>
+
+                            <p>Let's explore ray tracing by building a scene and following the rays that are cast.</p>
+                        </div>
+                        <h1>Spheres</h1>
+                        <div class="input-group">
+                            <input id="sphere-x" class="input-coordinate" type="number" placeholder="X">
+                            <input id="sphere-y" class="input-coordinate" type="number" placeholder="Y">
+                            <input id="sphere-z" class="input-coordinate" type="number" placeholder="Z">
+                            <input id="sphere-r" class="input-coordinate" type="number" placeholder="Radius">
+                            <select id="sphere-color">
                                 <option value="red" selected>Red</option>
                                 <option value="green">Green</option>
                                 <option value="blue">Blue</option>
                                 <option value="yellow">Yellow</option>
                             </select>
-                            
-                            <button id="sphere-add" type="button">Add Sphere</button>
+                            <button id="sphere-add" type="button">Add</button>
                         </div>
 
-                        <div>
-                            <p>Camera</p>
-                            X: <input id="camera-x" class="inline input-coordinate" type="number" value="5">
-                            Y: <input id="camera-y" class="input-coordinate" type="number" value="5">
-                            Z: <input id="camera-z" class="input-coordinate" type="number" value="5">
-                            
-                            <button id="camera-add" type="button">Set Camera</button>
+                        <h1>Light</h1>
+                        <div class="input-group">
+                            <input id="light-x" class="input-coordinate" type="number" placeholder="X">
+                            <input id="light-y" class="input-coordinate" type="number" placeholder="Y">
+                            <input id="light-z" class="input-coordinate" type="number" placeholder="Z">
+                            <select id="light-color">
+                                <option value="red" selected>Red</option>
+                                <option value="green">Green</option>
+                                <option value="blue">Blue</option>
+                                <option value="yellow">Yellow</option>
+                            </select>
+                            <button id="light-set" type="button">Set</button>
                         </div>
 
-                        <div>
-                            <button id="raytrace-next" type="button">Next Ray</button>
-                            <button id="raytrace-previous" type="button">Previous Ray</button>
+                        <h1>Camera</h1>
+                        <div class="input-group">
+                            <input id="camera-x" class="input-coordinate" type="number" placeholder="X">
+                            <input id="camera-y" class="input-coordinate" type="number" placeholder="Y">
+                            <input id="camera-z" class="input-coordinate" type="number" placeholder="Z">
+                            <button id="camera-set" type="button">Set</button>
                         </div>
 
-                        <h1>Ray Tracing</h1>
+                        <p>The matrix below represents the viewing plane of the camera. Click one of the buttons to trace a ray through the corresponding position of the camera's viewing plane.</p>
 
-                        <div>
-                            <p>Optical ray tracing describes a method for producing visual images constructed in 3D computer graphics environments, with more photorealism than either ray casting or scanline rendering techniques. It works by tracing a path from an imaginary eye through each pixel in a virtual screen, and calculating the color of the object visible through it.</p>
+                        <div class="raytrace-grid">
+                            <div style="input-group">
+                                <button id="raytrace-0-0" type="button"></button>
+                                <button id="raytrace-0-1" type="button"></button>
+                                <button id="raytrace-0-2" type="button"></button>
+                            </div>
+                            <div style="input-group">
+                                <button id="raytrace-1-0" type="button"></button>
+                                <button id="raytrace-1-1" type="button"></button>
+                                <button id="raytrace-1-2" type="button"></button>
 
-
-                            <p>Typically, each ray must be tested for intersection with some subset of all the objects in the scene. Once the nearest object has been identified, the algorithm will estimate the incoming light at the point of intersection, examine the material properties of the object, and combine this information to calculate the final color of the pixel. Certain illumination algorithms and reflective or translucent materials may require more rays to be re-cast into the scene.</p>
-
-                            <p>It may at first seem counterintuitive or "backwards" to send rays away from the camera, rather than into it (as actual light does in reality), but doing so is many orders of magnitude more efficient. Since the overwhelming majority of light rays from a given light source do not make it directly into the viewer's eye, a "forward" simulation could potentially waste a tremendous amount of computation on light paths that are never recorded.</p>
-
-                            <p>Therefore, the shortcut taken in raytracing is to presuppose that a given ray intersects the view frame. After either a maximum number of reflections or a ray traveling a certain distance without intersection, the ray ceases to travel and the pixel's value is updated.</p>
+                            </div>
+                            <div style="input-group">
+                                <button id="raytrace-2-0" type="button"></button>
+                                <button id="raytrace-2-1" type="button"></button>
+                                <button id="raytrace-2-2" type="button"></button>
+                            </div>
                         </div>
 
+                        <h1>Trace Ray</h1>
+                        <p>Trace the rays back and forth to understand how ray tracing works</p>
+                        <button id="raytrace-next" type="button">Next Ray</button>
+                        <button id="raytrace-previous" type="button">Previous Ray</button>
                     </main>
                 </div>
 
                 <div class="col-8 pad-0">
-
                     <canvas id="canvas"></canvas>
-                    <menu id="controls">
-                        <div class="container-fluid">            
-                          <div class="row">          
-                            <div class="btn-group">
-                              <button type="button" class="btn btn-default col-md-4"></button>
-                              <button type="button" class="btn btn-default col-md-4"></button>
-                              <button type="button" class="btn btn-default col-md-4"></button>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class=" btn-group">
-                              <button type="button" class="btn btn-default col-md-4"></button>
-                              <button type="button" class="btn btn-default col-md-4"></button>
-                              <button type="button" class="btn btn-default col-md-4"></button>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class=" btn-group">
-                              <button type="button" class="btn btn-default col-md-4"></button>
-                              <button type="button" class="btn btn-default col-md-4"></button>
-                              <button type="button" class="btn btn-default col-md-4"></button>
-                            </div>
-                          </div>
-                        </div>
-                    </menu>
                 </div>
             </div>
         </div>

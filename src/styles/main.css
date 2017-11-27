@@ -1,3 +1,7 @@
+html {
+    font-size: 0.9em;
+}
+
 body {
     overflow: hidden;
 }
@@ -14,15 +18,19 @@ body {
     height: 100vh;
 }
 
-.input-coordinate {
-    width: 100px !important;
+.raytrace-grid {
+    padding-bottom: 20px;
+    width: 120px;
 }
 
-
-#controls
-{
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  width: 100%;
+.raytrace-grid button {
+    width: 30px;
+    background: #eee;
+    border: 1px solid #000;
+    border-radius: 0px;
 }
+
+.raytrace-grid button:focus {
+    background: #ffff00;
+}
+

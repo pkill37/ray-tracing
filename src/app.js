@@ -8,13 +8,13 @@ class App {
         this.canvas = new Canvas()
         this.rayTraceDepth = 0
         this.pixel = [-5, -5, -3.5]
-        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [5, 5, 5], [0, 45, 0]))
+        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [5, 5, 5], [45, 45, 0]))
  
     }
 
     setEventListeners() {
         document.getElementById('sphere-add').addEventListener('click', () => this.handleAddSphere())
-        document.getElementById('camera-add').addEventListener('click', () => this.handleAddCamera())
+        document.getElementById('camera-add').addEventListener('click', () => this.handleSetCamera())
         document.getElementById('raytrace-next').addEventListener('click', () => this.handleNextRayTrace())
         document.getElementById('raytrace-previous').addEventListener('click', () => this.handlePreviousRayTrace())
     }
@@ -47,28 +47,26 @@ class App {
         this.canvas.scene.add(new Sphere([x, y, z], r, color))
     }
 
-    handleAddCamera() {
+    handleSetCamera() {
         let x = parseFloat(document.getElementById('camera-x').value)
         let y = parseFloat(document.getElementById('camera-y').value)
         let z = parseFloat(document.getElementById('camera-z').value)
 
         console.log('Add camera', x, y, z)
-        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [x, y, z-frustumHeight], [90, 0, 0]))
+        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [x, y-frustumHeight, z], [90, 45, 0], [10, 10, 10]))
     }
 
 
     handleNextRayTrace() {
-        if (!this.canvas.scene.lastRayWasCast) 
-            this.rayTraceDepth++
-        this.canvas.scene.drawRay(normalizeRet(this.pixel), this.rayTraceDepth)
+
+        if (!this.canvas.scene.lastRayWasCast) this.rayTraceDepth++
+        this.canvas.scene.castRay(normalizeRet(this.pixel), this.rayTraceDepth)
     }
 
     handlePreviousRayTrace() {
-        if(this.rayTraceDepth > 0){
-            this.rayTraceDepth--
-            this.canvas.scene.drawRay(normalizeRet(this.pixel), this.rayTraceDepth)
+        if (this.rayTraceDepth > 0) this.rayTraceDepth--
+        this.canvas.scene.castRay(normalizeRet(this.pixel), this.rayTraceDepth)
         }
-    }
 
     start() {
         this.canvas.start()

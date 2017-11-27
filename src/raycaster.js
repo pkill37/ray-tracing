@@ -28,11 +28,11 @@ function reflect(i, n) {
     return subtract(i, multiplyVectorByScalar(n, 2*dotProduct(i, n)) )
 }
 
-function raycast(ray, direction, depth, objects, rays, lastRay = NaN) {
+function raycast(ray, direction, depth, objects, primaryRays, shadowRays, lastRay = NaN) {
     
     if (depth === 0){ 
         // if(lastRay != NaN)
-        //     rays.push(lastRay)
+        //     primaryRays.push(lastRay)
         return false
     }
     
@@ -60,16 +60,16 @@ function raycast(ray, direction, depth, objects, rays, lastRay = NaN) {
             let away = add(intersection,reflection)
             console.log("away", away)
 
-            rays.push([ray, intersection])
+            primaryRays.push([ray, intersection])
             lastRay = [intersection, away]
-            //rays.push([intersection, add(normal,intersection)])
+            //primaryRays.push([intersection, add(normal,intersection)])
 
             
-            return raycast(intersection, reflection, depth-1, objects, rays,lastRay)
+            return raycast(intersection, reflection, depth-1, objects, primaryRays, shadowRays, lastRay)
         }
     }
     if(! foundIntersectionFlag && lastRay != NaN){
-        rays.push(lastRay)
+        primaryRays.push(lastRay)
         return true
     }
 

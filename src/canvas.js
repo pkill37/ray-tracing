@@ -56,9 +56,6 @@ class Canvas {
             new Sphere([0, 4, 3], 2, COLORS.BLUE),
             new Sphere([2, 3, -2], 1, COLORS.BLUE),
 
-
-
-
             new Line([0, 0, 0], [axis, 0, 0], COLORS.RED),
             new Line([0, 0, 0], [0, axis, 0], COLORS.GREEN),
             new Line([0, 0, 0], [0, 0, axis], COLORS.BLUE),

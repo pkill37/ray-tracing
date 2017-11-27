@@ -28,10 +28,10 @@ function reflect(i, n) {
     return subtract(i, multiplyVectorByScalar(n, 2*dotProduct(i, n)) )
 }
 
-function raycast(ray, direction, depth, objects, primaryRays, shadowRays, lastRay = NaN) {
+function raycast(ray, direction, depth, objects, primaryRays, shadowRays, lastRay = null) {
     
     if (depth === 0){ 
-        // if(lastRay != NaN)
+        //  if(lastRay != NaN)
         //     primaryRays.push(lastRay)
         return false
     }
@@ -68,10 +68,17 @@ function raycast(ray, direction, depth, objects, primaryRays, shadowRays, lastRa
             return raycast(intersection, reflection, depth-1, objects, primaryRays, shadowRays, lastRay)
         }
     }
-    if(! foundIntersectionFlag && lastRay != NaN){
-        primaryRays.push(lastRay)
-        return true
+    if(! foundIntersectionFlag ){
+        if( lastRay != null){
+            primaryRays.push(lastRay)
+            return true
+        }
+        else{
+            primaryRays.push([ray,multiplyVectorByScalar(direction,10)])
+            return true
+        }
     }
+    return false
 
 }
 

@@ -53,22 +53,23 @@ class App {
         let z = parseFloat(document.getElementById('camera-z').value)
 
         console.log('Add camera', x, y, z)
+        
         var cameraRotation = [45,45,0]
-        this.canvas.scene.camera = [x,y,z]
-        this.canvas.scene.cameraRotation = 
-        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [x, y, z], [45, 45, 0], [1, 1, 1]))
+        this.canvas.scene.camera = new Camera([x,y,z], cameraRotation, [1,1,1]);
+        this.canvas.scene.primaryRays = []
+
     }
 
 
     handleNextRayTrace() {
 
         if (!this.canvas.scene.lastRayWasCast) this.rayTraceDepth++
-        this.canvas.scene.castRay(normalizeRet(this.canvas.scene.cameraCenter), this.rayTraceDepth)
+        this.canvas.scene.castRay(normalizeRet(this.canvas.scene.camera.cameraCenter), this.rayTraceDepth)
     }
 
     handlePreviousRayTrace() {
         if (this.rayTraceDepth > 0) this.rayTraceDepth--
-        this.canvas.scene.castRay(normalizeRet(this.canvas.scene.cameraCenter), this.rayTraceDepth)
+        this.canvas.scene.castRay(normalizeRet(this.canvas.scene.camera.cameraCenter), this.rayTraceDepth)
         }
 
     start() {

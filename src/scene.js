@@ -1,16 +1,17 @@
 class Scene {
     constructor() {
         this.camera = null
-        this.cameraCenter = [-5,-5,-3.5]
         this.models = []
         this.lights = []
         this.primaryRays = []
         this.shadowRays = []
+
         this.pMatrix = perspective(100, 1, 0.05, 50)
         this.globalTz = -4.5
         this.triangleVertexPositionBuffer = null
         this.triangleVertexNormalBuffer = null
         this.triangleVertexColorBuffer = null
+
         //initial global values
         this.globalRotation = [45,-45,0];
         this.globalScale = [0.3,0.3,0.3];
@@ -95,6 +96,11 @@ class Scene {
             this.drawModel(model, mvMatrix)
         }
 
+        if(this.camera !== null && this.camera.frustum !== null){
+              this.drawModel(this.camera.frustum, mvMatrix)
+        }
+        
+
         for(let p of this.primaryRays) {
             this.drawModel(p, mvMatrix)
         }
@@ -108,9 +114,10 @@ class Scene {
         this.primaryRays = []
         this.shadowRays = []
 
-        this.lastRayWasCast = raycast(this.camera, direction, depth, this.models.filter(m => m instanceof Sphere), this.primaryRays, this.shadowRays)
-
+        this.lastRayWasCast = raycast(this.camera.origin, direction, depth, this.models.filter(m => m instanceof Sphere), this.primaryRays, this.shadowRays)
+        
         this.primaryRays = this.primaryRays.map(r => new Line(r[0], r[1], COLORS.YELLOW))
+        
         this.shadowRays = this.shadowRays.map(r => new Line(r[0], r[1], COLORS.BLACK))
     }
 
@@ -118,28 +125,11 @@ class Scene {
         // The global model transformation is an input
         // Concatenate with the particular model transformations
         // Pay attention to transformation order
-
          mvMatrix = mult(mvMatrix, translationMatrix(model.translation[0], model.translation[1], model.translation[2]));
          mvMatrix = mult(mvMatrix, rotationZZMatrix(model.rotation[2]));
          mvMatrix = mult(mvMatrix, rotationYYMatrix(model.rotation[1]));
          mvMatrix = mult(mvMatrix, rotationXXMatrix(model.rotation[0]));
          mvMatrix = mult(mvMatrix, scalingMatrix(model.scale[0], model.scale[1], model.scale[2]));
-        
-
-        if(model instanceof Frustum){
-             let cameraMatrix = translationMatrix(0,0,0)
-             cameraMatrix = mult(cameraMatrix, translationMatrix(model.translation[0], model.translation[1], model.translation[2]));
-             cameraMatrix = mult(cameraMatrix, rotationZZMatrix(model.rotation[2]));
-             cameraMatrix = mult(cameraMatrix, rotationYYMatrix(model.rotation[1]));
-             cameraMatrix = mult(cameraMatrix, rotationXXMatrix(model.rotation[0]));
-             cameraMatrix = mult(cameraMatrix, scalingMatrix(model.scale[0], model.scale[1], model.scale[2]));
-            
-                this.cameraCenter = multiplyPointByMatrix( cameraMatrix, [0,-2,0,1]).slice(0,3);
-                
-                this.cameraCenter = subtract( this.cameraCenter, this.camera)
-        }
-
-
 
         // Passing the Model View Matrix to apply the current transformation
         var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");

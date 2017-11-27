@@ -8,7 +8,7 @@ class App {
         this.canvas = new Canvas()
         this.rayTraceDepth = 0
         this.pixel = [-5, -5, -3.5]
-        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [5, 5, 5], [45, 45, 0]))
+        //this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [5, 5, 5], [45, 45, 0]))
  
     }
 
@@ -53,19 +53,22 @@ class App {
         let z = parseFloat(document.getElementById('camera-z').value)
 
         console.log('Add camera', x, y, z)
-        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [x, y-frustumHeight, z], [90, 45, 0], [10, 10, 10]))
+        var cameraRotation = [45,45,0]
+        this.canvas.scene.camera = [x,y,z]
+        this.canvas.scene.cameraRotation = 
+        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [x, y, z], [45, 45, 0], [1, 1, 1]))
     }
 
 
     handleNextRayTrace() {
 
         if (!this.canvas.scene.lastRayWasCast) this.rayTraceDepth++
-        this.canvas.scene.castRay(normalizeRet(this.pixel), this.rayTraceDepth)
+        this.canvas.scene.castRay(normalizeRet(this.canvas.scene.cameraCenter), this.rayTraceDepth)
     }
 
     handlePreviousRayTrace() {
         if (this.rayTraceDepth > 0) this.rayTraceDepth--
-        this.canvas.scene.castRay(normalizeRet(this.pixel), this.rayTraceDepth)
+        this.canvas.scene.castRay(normalizeRet(this.canvas.scene.cameraCenter), this.rayTraceDepth)
         }
 
     start() {

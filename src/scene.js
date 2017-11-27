@@ -3,7 +3,8 @@ class Scene {
         this.camera = [5, 5, 5]
         this.models = []
         this.lights = []
-        this.rays = []
+        this.primaryRays = []
+        this.shadowRays = []
         this.pMatrix = perspective(100, 1, 0.05, 50)
         this.globalTz = -4.5
         this.triangleVertexPositionBuffer = null
@@ -92,22 +93,23 @@ class Scene {
             this.drawModel(model, mvMatrix)
         }
 
-        // TODO: refactor this into drawRay
-        for(let ray of this.rays) {
-            this.drawModel(ray, mvMatrix)
+        for(let p of this.primaryRays) {
+            this.drawModel(p, mvMatrix)
+        }
+
+        for(let s of this.shadowRays) {
+            this.drawModel(s, mvMatrix)
         }
     }
 
-    drawRay(direction, depth) {
-        // TODO: Clear currently drawn rays
-        this.rays = []
+    castRay(direction, depth) {
+        this.primaryRays = []
+        this.shadowRays = []
 
-        // Compute reflected rays
-        this.lastRayWasCast = raycast(this.camera, direction, depth, this.models.filter(m => m instanceof Sphere), this.rays) 
+        this.lastRayWasCast = raycast(this.camera, direction, depth, this.models.filter(m => m instanceof Sphere), this.primaryRays, this.shadowRays)
 
-        this.rays = this.rays.map(r => new Line(r[0], r[1], COLORS.YELLOW))
-
-        console.log('Traced rays', this.rays)
+        this.primaryRays = this.primaryRays.map(r => new Line(r[0], r[1], COLORS.YELLOW))
+        this.shadowRays = this.shadowRays.map(r => new Line(r[0], r[1], COLORS.BLACK))
     }
 
     drawModel(model, mvMatrix) {

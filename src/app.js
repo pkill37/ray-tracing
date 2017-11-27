@@ -57,12 +57,12 @@ class App {
 
     handleNextRayTrace() {
         if (!this.canvas.scene.lastRayWasCast) this.rayTraceDepth++
-        this.canvas.scene.drawRay(normalizeRet(this.pixel), this.rayTraceDepth)
+        this.canvas.scene.castRay(normalizeRet(this.pixel), this.rayTraceDepth)
     }
 
     handlePreviousRayTrace() {
-        this.rayTraceDepth--
-        this.canvas.scene.drawRay(normalizeRet(this.pixel), this.rayTraceDepth)
+        if (this.rayTraceDepth > 0) this.rayTraceDepth--
+        this.canvas.scene.castRay(normalizeRet(this.pixel), this.rayTraceDepth)
     }
 
     start() {

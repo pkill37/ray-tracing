@@ -32,7 +32,6 @@ class Camera {
 
     setPixelVector(i, j) {
         this.pixelVector = this.pixelMatrix[i][j]
-        this.nearVector = multiplyPointByMatrix( this.cameraMatrix, [this.pixelVector[0], this.pixelVector[1], this.pixelVector[2],0]).slice(0,3);        
+        this.nearVector = multiplyPointByMatrix( this.cameraMatrix, [this.pixelVector[0], this.pixelVector[1], this.pixelVector[2],0]).slice(0,3);
     }
 }
-

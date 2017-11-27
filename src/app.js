@@ -8,7 +8,12 @@ class App {
         this.canvas = new Canvas()
         this.rayTraceDepth = 0
         this.pixel = [-5, -5, -3.5]
-        //this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [5, 5, 5], [45, 45, 0]))
+
+        var cameraRotation = [45, 45, 0]
+        this.canvas.scene.camera = new Camera([5, 5, 5], cameraRotation, [1, 1, 1]);
+        this.canvas.scene.primaryRays = []
+        this.rayTraceDepth = 0;
+        //this.canvas.scene.lastRayWasCast = false
     }
 
     setEventListeners() {
@@ -93,25 +98,35 @@ class App {
             case 'white':
                 color = COLORS.WHITE
                 break
-            default:
+            case 'black':
                 color = COLORS.BLACK
+                break
+            default:
+                color = COLORS.WHITE
         }
-        console.log('Set light', x, y, z, color)
-        this.canvas.scene.lights[0] = new LightSource([x, y, z, 1], color.slice(0, 3), [0.5, 0.5, 0.5])
+        if(!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+            console.log('Set light', x, y, z, color)
+            this.canvas.scene.lights[0] = new LightSource([x, y, z, 1], color.slice(0, 3), [0.5, 0.5, 0.5])
+        } else {
+            this.canvas.scene.lights[0] = new LightSource(this.canvas.scene.lights[0].position, color.slice(0, 3), [0.5, 0.5, 0.5])
+        }
     }
 
     handleInitialRayTrace(i, j) {
         console.log('picked camera base', i, j)
         this.canvas.scene.camera.setPixelVector(i, j)
+        this.canvas.scene.lastRayWasCast = false
         this.rayTraceDepth = 0
     }
 
     handleNextRayTrace() {
+        console.log('trying next', this.rayTraceDepth, this.canvas.scene.lastRayWasCast)
         if (!this.canvas.scene.lastRayWasCast) this.rayTraceDepth++
         this.canvas.scene.castRay(normalizeRet(this.canvas.scene.camera.nearVector), this.rayTraceDepth)
     }
 
     handlePreviousRayTrace() {
+        console.log('trying previous', this.rayTraceDepth, this.canvas.scene.lastRayWasCast)
         if (this.rayTraceDepth > 0) this.rayTraceDepth--
         this.canvas.scene.castRay(normalizeRet(this.canvas.scene.camera.nearVector), this.rayTraceDepth)
     }

@@ -28,15 +28,21 @@ function reflect(i, n) {
     return subtract(i, multiplyVectorByScalar(n, 2*dotProduct(i, n)) )
 }
 
-function raycast(ray, direction, depth, objects, rays) {
-  
+function raycast(ray, direction, depth, objects, rays, lastRay = NaN) {
+    
+    if (depth === 0){ 
+        // if(lastRay != NaN)
+        //     rays.push(lastRay)
+        return false
+    }
+    
+    let foundIntersectionFlag = false;
 
     for (let obj of objects) {
         let t = intersectSphere(ray, direction, obj.center, obj.radius)
         
         if (t !== Infinity) {
-            
-
+            foundIntersectionFlag = true;
             console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center + ' distanced ' + t)
             
             let incident = multiplyVectorByScalar(direction, t)
@@ -54,18 +60,18 @@ function raycast(ray, direction, depth, objects, rays) {
             let away = add(intersection,reflection)
             console.log("away", away)
 
+            rays.push([ray, intersection])
+            lastRay = [intersection, away]
+            //rays.push([intersection, add(normal,intersection)])
 
-            if (depth !== 0) 
-                rays.push([ray, intersection])
-            else{
-                rays.push([intersection, away])
-                return
-            }
-
-            //rays.push([intersection, add(normal,intersection)])            
             
-            return raycast(intersection, reflection, depth-1, objects, rays)
+            return raycast(intersection, reflection, depth-1, objects, rays,lastRay)
         }
     }
+    if(! foundIntersectionFlag && lastRay != NaN){
+        rays.push(lastRay)
+        return true
+    }
+
 }
 

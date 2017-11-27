@@ -1,6 +1,6 @@
 class Scene {
     constructor() {
-        this.camera = [0, 0, 7]
+        this.camera = [5, 5, 5]
         this.models = []
         this.lights = []
         this.rays = []
@@ -103,7 +103,7 @@ class Scene {
         this.rays = []
 
         // Compute reflected rays
-        raycast(this.camera, direction, depth, this.models.filter(m => m instanceof Sphere), this.rays)
+        this.lastRayWasCast = raycast(this.camera, direction, depth, this.models.filter(m => m instanceof Sphere), this.rays) 
 
         this.rays = this.rays.map(r => new Line(r[0], r[1], COLORS.YELLOW))
 

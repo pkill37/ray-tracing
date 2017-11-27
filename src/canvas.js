@@ -78,12 +78,6 @@ class Canvas {
             this.scene.addLight(light)
         }
 
-        this.scene.camera = [5, 5, 5]
-
-        // TODO: move this into the scene draw eventually
-        let direction = symmetric(this.scene.camera)
-        this.scene.drawRay(normalizeRet([-5,-5,-3.5]), 10)
-
         this.tick()
     }
 

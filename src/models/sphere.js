@@ -4,5 +4,11 @@ class Sphere extends Model {
         this.center = center
         this.radius = radius
     }
+
+    normalAt(p) {
+        let n = subtract(p, this.center)
+        normalize(n)
+        return n
+    }
 }
 

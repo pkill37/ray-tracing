@@ -68,7 +68,7 @@ class Canvas {
         }
 
         let lights = [
-            new LightSource([5,5,5,1], [1,1,1], [1.0,1.0,1.0])
+            new LightSource([5,10,5,1], [1,1,0], [0.5, 0.5, 0.5])
         ]
 
         for(let light of lights) {

@@ -100,6 +100,10 @@ class Scene {
         for(let s of this.shadowRays) {
             this.drawModel(s, mvMatrix)
         }
+
+        for(let l of this.lights) {
+            this.drawModel(new Sphere(l.position, 0.25, l.intensity), mvMatrix)
+        }
     }
 
     drawModel(model, mvMatrix) {

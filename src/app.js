@@ -8,6 +8,8 @@ class App {
         this.canvas = new Canvas()
         this.rayTraceDepth = 0
         this.pixel = [-5, -5, -3.5]
+        this.canvas.scene.add(new Frustum(COLORS.BLACK, null, [5, 5, 5], [0, 45, 0]))
+ 
     }
 
     setEventListeners() {
@@ -56,13 +58,16 @@ class App {
 
 
     handleNextRayTrace() {
-        if (!this.canvas.scene.lastRayWasCast) this.rayTraceDepth++
+        if (!this.canvas.scene.lastRayWasCast) 
+            this.rayTraceDepth++
         this.canvas.scene.drawRay(normalizeRet(this.pixel), this.rayTraceDepth)
     }
 
     handlePreviousRayTrace() {
-        this.rayTraceDepth--
-        this.canvas.scene.drawRay(normalizeRet(this.pixel), this.rayTraceDepth)
+        if(this.rayTraceDepth > 0){
+            this.rayTraceDepth--
+            this.canvas.scene.drawRay(normalizeRet(this.pixel), this.rayTraceDepth)
+        }
     }
 
     start() {

@@ -160,7 +160,7 @@ class Scene {
         this.primaryRays = []
         this.shadowRays = []
 
-        this.lastRayWasCast = raycast(this.camera.origin, direction, depth, this.models.filter(m => m instanceof Sphere), this.primaryRays, this.shadowRays)
+        this.lastRayWasCast = raycast(this.camera.origin, direction, depth, this.models.filter(m => m instanceof Sphere || m instanceof Floor), this.primaryRays, this.shadowRays)
 
         this.primaryRays = this.primaryRays.map(r => new Line(r[0], r[1], COLORS.YELLOW))
         this.shadowRays = this.shadowRays.map(r => new Line(r[0], r[1], COLORS.BLACK))

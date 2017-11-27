@@ -9,7 +9,7 @@ function intersectPlane(o, d, p, n) {
         return Infinity
     }
 
-    let dist = dotProduct(subtract(P, O), N) / denom
+    let dist = dotProduct(subtract(p, o), n) / denom
     if (dist < 0) {
         return Infinity
     }
@@ -43,29 +43,23 @@ function reflect(i, n) {
 }
 
 function raycast(ray, direction, depth, objects, primaryRays, shadowRays, lastRay = null) {
-    
-    if (depth === 0){ 
-        //  if(lastRay != NaN)
-        //     primaryRays.push(lastRay)
-        return false
-    }
-    
+    if (depth === 0) return false
+
     let foundIntersectionFlag = false;
 
     for (let obj of objects) {
         let t = intersect(ray, direction, obj)
-        
         if (t !== Infinity) {
             foundIntersectionFlag = true;
-            console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center + ' distanced ' + t)
-            
+            console.log('Ray', ray, direction, ' intersected ', obj, ' distanced ', t)
+
             let incident = multiplyVectorByScalar(direction, t)
             console.log("incident", incident)
-            
+
             let intersection = add(ray, incident)
             console.log("intersection", intersection)
 
-            let normal = normalizeRet(subtract( intersection, obj.center))
+            let normal = (obj instanceof Floor) ? obj.normal : normalizeRet(subtract( intersection, obj.center))
             console.log("normal", normal)
 
             let reflection = reflect(incident, normal)
@@ -78,8 +72,9 @@ function raycast(ray, direction, depth, objects, primaryRays, shadowRays, lastRa
             lastRay = [intersection, away]
             //primaryRays.push([intersection, add(normal,intersection)])
 
-            
             return raycast(intersection, reflection, depth-1, objects, primaryRays, shadowRays, lastRay)
+        } else {
+            console.log('not intersected')
         }
     }
     if(! foundIntersectionFlag ){

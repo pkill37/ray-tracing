@@ -52,47 +52,62 @@ function raycast(ray, direction, depth, objects, primaryRays, shadowRays, lastRa
     
     let foundIntersectionFlag = false;
 
+    let closestObj = Array(2)
+
     for (let obj of objects) {
         let t = intersect(ray, direction, obj)
+
         
-        if (t !== Infinity) {
+        if (t !== Infinity && t != undefined) {
+            console.log("t",t)
+            if(foundIntersectionFlag){
+                if(t < closestObj[1])
+                    closestObj = [obj,t]
+            } 
+            else
+                closestObj = [obj,t] 
             foundIntersectionFlag = true;
-            console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center + ' distanced ' + t)
-            
-            let incident = multiplyVectorByScalar(direction, t)
-            console.log("incident", incident)
-            
-            let intersection = add(ray, incident)
-            console.log("intersection", intersection)
-
-            let normal = normalizeRet(subtract( intersection, obj.center))
-            console.log("normal", normal)
-
-            let reflection = reflect(incident, normal)
-            console.log("reflection", reflection)
-
-            let away = add(intersection,reflection)
-            console.log("away", away)
-
-            primaryRays.push([ray, intersection])
-            lastRay = [intersection, away]
-            //primaryRays.push([intersection, add(normal,intersection)])
-
-            
-            return raycast(intersection, reflection, depth-1, objects, primaryRays, shadowRays, lastRay)
         }
     }
-    if(! foundIntersectionFlag ){
-        if( lastRay != null){
+
+    if(foundIntersectionFlag){
+
+        let obj = closestObj[0];
+        let t = closestObj[1];
+
+        console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center + ' distanced ' + t)
+        
+        let incident = multiplyVectorByScalar(direction, t)
+        console.log("incident", incident)
+        
+        let intersection = add(ray, incident)
+        console.log("intersection", intersection)
+
+        let normal = normalizeRet(subtract( intersection, obj.center))
+        console.log("normal", normal)
+
+        let reflection = reflect(incident, normal)
+        console.log("reflection", reflection)
+
+        let away = add(intersection,reflection)
+        console.log("away", away)
+
+        primaryRays.push([ray, intersection])
+        lastRay = [intersection, away]
+        //primaryRays.push([intersection, add(normal,intersection)])
+
+        return raycast(intersection, reflection, depth-1, objects, primaryRays, shadowRays, lastRay)
+    }
+
+    else{
+        if( lastRay !== null){
             primaryRays.push(lastRay)
             return true
         }
         else{
-            primaryRays.push([ray,multiplyVectorByScalar(direction,10)])
+            primaryRays.push([ray, add(ray,multiplyVectorByScalar(direction,10))])
             return true
         }
     }
-    return false
-
 }
 

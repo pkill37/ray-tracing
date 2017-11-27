@@ -66,17 +66,6 @@ class Scene {
 
         mvMatrix = mult(mvMatrix, translationMatrix(this.dragTranslation[0], this.dragTranslation[1],this.dragTranslation[2]));
 
-
-        // let tmpMatrix = mult(mvMatrix, translationMatrix(0,0,this.globalTranslation[2]))
-        
-        // tmpMatrix = mult(tmpMatrix, rotationXXMatrix(this.globalRotation[0]));
-        // tmpMatrix = mult(tmpMatrix, rotationYYMatrix(this.globalRotation[1]));
-        // tmpMatrix = mult(tmpMatrix, rotationZZMatrix(this.globalRotation[2]));
-        // tmpMatrix = mult(tmpMatrix, translationMatrix(0,0,this.globalTranslation[2]))
-        
-        
-        
-
         // Global rotation
          mvMatrix = mult(mvMatrix, rotationXXMatrix(this.globalRotation[0]));
          mvMatrix = mult(mvMatrix, rotationYYMatrix(this.globalRotation[1]));
@@ -91,6 +80,8 @@ class Scene {
         mvMatrix = mult(mvMatrix, translationMatrix(this.globalTranslation[0], this.globalTranslation[1],this.globalTranslation[2]));
         // mvMatrix = mult(mvMatrix, translationMatrix(tmpMatrix[0][2], 0,tmpMatrix[2][2]));
 
+
+
         this.mvMatrix = mvMatrix
 
         for(let model of this.models) {
@@ -98,6 +89,8 @@ class Scene {
         }
 
         if(this.camera !== null && this.camera.frustum !== null){
+              //this.camera.updateCameraMatrix(mvMatrix);
+
               this.drawModel(this.camera.frustum, mvMatrix)
         }
 
@@ -160,6 +153,8 @@ class Scene {
         this.primaryRays = []
         this.shadowRays = []
 
+        console.log("castRayorigin",this.camera.origin)
+        console.log("castRaydirection",direction)
         this.lastRayWasCast = raycast(this.camera.origin, direction, depth, this.models.filter(m => m instanceof Sphere), this.primaryRays, this.shadowRays)
 
         this.primaryRays = this.primaryRays.map(r => new Line(r[0], r[1], COLORS.YELLOW))

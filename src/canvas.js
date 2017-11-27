@@ -111,7 +111,7 @@ class Canvas {
 		    var mousey = event.clientY - canvas.offsetTop;
 		    var wheel = event.wheelDelta/120;//n or -n
 		    var zoom = 1 + wheel/20;
-		    var zoomIntensity = 0.2;
+		    var zoomIntensity = 0.1;
 		    var zoom = Math.exp(wheel*zoomIntensity);
 
             self.scene.globalScale = mult(self.scene.globalScale,[ zoom,zoom,zoom ]);

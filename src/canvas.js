@@ -18,6 +18,7 @@ class Canvas {
         try { gl = this.canvas.getContext("webgl2");
             gl.clearColor(...COLORS.BLACK);
             gl.enable(gl.DEPTH_TEST);
+            gl.lineWidth(3);
         } catch (e) {
             console.log("Could not initialise WebGL", e);
         }
@@ -51,6 +52,12 @@ class Canvas {
         let models = [
             new Sphere([1, 1, -5], 1, COLORS.RED),
             new Sphere([0, 0, 0], 2, COLORS.GREEN),
+            new Sphere([0, -1, 4], 2, COLORS.BLUE),
+            new Sphere([0, 4, 3], 2, COLORS.BLUE),
+            new Sphere([2, 3, -2], 1, COLORS.BLUE),
+
+
+
 
             new Line([0, 0, 0], [axis, 0, 0], COLORS.RED),
             new Line([0, 0, 0], [0, axis, 0], COLORS.GREEN),
@@ -75,7 +82,7 @@ class Canvas {
 
         // TODO: move this into the scene draw eventually
         let direction = symmetric(this.scene.camera)
-        this.scene.drawRay(normalizeRet([-5,-5,-3.5]), 3)
+        this.scene.drawRay(normalizeRet([-5,-5,-3.5]), 10)
 
         this.tick()
     }

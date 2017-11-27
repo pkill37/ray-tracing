@@ -29,12 +29,14 @@ function reflect(i, n) {
 }
 
 function raycast(ray, direction, depth, objects, rays) {
-    if (depth === 0) return
-    
+  
+
     for (let obj of objects) {
         let t = intersectSphere(ray, direction, obj.center, obj.radius)
         
         if (t !== Infinity) {
+            
+
             console.log('Ray '+ ray+ ' with direction '+ direction+ ' intersected sphere of radius '+ obj.radius+ ' centered at '+ obj.center + ' distanced ' + t)
             
             let incident = multiplyVectorByScalar(direction, t)
@@ -52,11 +54,17 @@ function raycast(ray, direction, depth, objects, rays) {
             let away = add(intersection,reflection)
             console.log("away", away)
 
-            rays.push([ray, intersection])
-            rays.push([intersection, away])
-            rays.push([intersection, add(normal,intersection)])            
+
+            if (depth !== 0) 
+                rays.push([ray, intersection])
+            else{
+                rays.push([intersection, away])
+                return
+            }
+
+            //rays.push([intersection, add(normal,intersection)])            
             
-            //return raycast(intersection, reflection, depth-1, objects, rays)
+            return raycast(intersection, reflection, depth-1, objects, rays)
         }
     }
 }

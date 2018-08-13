@@ -1,6 +1,6 @@
 # ray-tracing
 
-![](https://i.imgur.com/s82ELdl.png)
+![](https://i.imgur.com/BOGvcSM.png)
 
 Animation in a WebGL application that dynamically explains and demonstrates the ray tracing algorithm.
 
